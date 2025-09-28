@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+sqlmodel
+ebooklib
+pypdf2
+pillow
+alembic
