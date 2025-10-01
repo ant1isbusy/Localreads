@@ -4,7 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from sqlmodel import Session
 from .db import create_db_and_tables, get_session
 from .models import Book
-from .crud import get_books, update_book_progress
+from .crud import get_books, update_book_progress, scan_books_directory
 
 app = FastAPI(title="Localreads")
 
@@ -64,8 +64,8 @@ def update_progress(
 
 @app.post("/scan/")
 def scan_books(books_path: str = "./books", session: Session = Depends(get_session)):
-    # TODO
-    pass
+    result = scan_books_directory(session, books_path)
+    return result
 
 
 @app.get("/health")
