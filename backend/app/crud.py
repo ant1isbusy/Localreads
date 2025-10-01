@@ -11,10 +11,10 @@ def create_book(session: Session, book_data: dict) -> Book:
     return db_book
 
 
-def get_books(session: Session, skip: int = 0, limit: int = 100) -> Sequence[Book]:
+def get_books(session: Session, skip: int = 0, limit: int = 100) -> List[Book]:
     statement = select(Book).offset(skip).limit(limit)
     results = session.exec(statement)
-    return results.all()
+    return list(results.all())
 
 
 def get_book_by_id(session: Session, book_id: int) -> Optional[Book]:
