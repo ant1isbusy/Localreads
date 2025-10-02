@@ -23,13 +23,27 @@ class EPUBScanner(BaseScanner):
             }
 
             if hasattr(book, "metadata"):
-                print("IN HERE!")
-                print(book.metadata)
-                if book.metadata.get("DC", {}).get("title"):
-                    metadata["title"] = book.metadata["DC"]["title"][0]
+                dc_keys = ["http://purl.org/dc/elements/1.1/", "DC", "dc"]
+                dc_meta = None
+                for key in dc_keys:
+                    if key in book.metadata:
+                        dc_meta = book.metadata[key]
+                        break
 
-                if book.metadata.get("DC", {}).get("creator"):
-                    metadata["author"] = book.metadata["DC"]["creator"][0]
+                if dc_meta:
+                    if "title" in dc_meta and dc_meta["title"]:
+                        title_val = dc_meta["title"][0]
+                        metadata["title"] = (
+                            title_val[0] if isinstance(title_val, tuple) else title_val
+                        )
+
+                    if "creator" in dc_meta and dc_meta["creator"]:
+                        author_val = dc_meta["creator"][0]
+                        metadata["author"] = (
+                            author_val[0]
+                            if isinstance(author_val, tuple)
+                            else author_val
+                        )
 
             else:
                 print("NO METADATA ATTRIBUTE")
@@ -60,32 +74,29 @@ class EPUBScanner(BaseScanner):
     def extract_cover(cls, book: epub.EpubBook, file_path: str) -> Optional[str]:
         """Extract cover image from EPUB"""
         try:
-            for item in book.get_items():
-                if item.get_type() == ebooklib.ITEM_COVER:
-                    cover_data = item.get_content()
+            # check if there is an image item which is named cover.*, else just take the first image
+            cover_item = None
+            for item in book.get_items_of_type(ebooklib.ITEM_IMAGE):
+                name = item.get_name()
+                base_name = os.path.splitext(os.path.basename(name))[0]
+                if base_name.lower() == "cover":
+                    cover_item = item
+                    break
+            if not cover_item:
+                images = list(book.get_items_of_type(ebooklib.ITEM_IMAGE))
+                if images:
+                    cover_item = images[0]
 
-                    cover_filename = f"cover_{cls.generate_file_hash(file_path)}.jpg"
-                    cover_path = os.path.join("covers", cover_filename)
-
-                    image = Image.open(io.BytesIO(cover_data))
-                    image = image.convert("RGB")
-                    image.save(cover_path, "JPEG")
-                    return cover_path
-
-                if item.get_type() == ebooklib.ITEM_IMAGE:
-                    if "cover" in item.file_name.lower():
-                        cover_data = item.get_content()
-                        cover_filename = (
-                            f"cover_{cls.generate_file_hash(file_path)}.jpg"
-                        )
-                        cover_path = os.path.join("covers", cover_filename)
-
-                        image = Image.open(io.BytesIO(cover_data))
-                        image = image.convert("RGB")
-                        image.save(cover_path, "JPEG")
-                        return cover_path
-
-            return None
+            if cover_item:
+                image_data = cover_item.get_content()
+                image = Image.open(io.BytesIO(image_data))
+                cover_filename = f"cover_{cls.generate_file_hash(file_path)}.jpg"
+                cover_path = os.path.join("covers", cover_filename)
+                os.makedirs("covers", exist_ok=True)
+                image.save(cover_path, "JPEG")
+                return cover_path
+            else:
+                return None
 
         except Exception as e:
             print(f"Error extracting cover from {file_path}: {e}")
