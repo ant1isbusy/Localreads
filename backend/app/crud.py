@@ -12,33 +12,30 @@ def create_book(session: Session, book_data: dict) -> Book:
     session.refresh(db_book)
     return db_book
 
+def get_books(session: Session, sort_by: str = "title"):
 
-def get_books(session: Session, skip: int = 0, limit: int = 100) -> List[Book]:
-    statement = select(Book).offset(skip).limit(limit)
-    results = session.exec(statement)
-    return list(results.all())
-
-
+    statement = select(Book)
+    if sort_by == "title":
+        statement = statement.order_by(Book.title)
+    elif sort_by == "progress":
+        statement = statement.order_by(Book.progress.desc())
+    books = session.exec(statement).all()
+    return books
+    
 def get_book_by_id(session: Session, book_id: int) -> Optional[Book]:
     return session.get(Book, book_id)
 
 
-def update_book_progress(
-    session: Session, book_id: int, progress: float, current_page: int
-) -> Optional[Book]:
+def update_book_progress(session: Session, book_id: int, progress: float):
     book = session.get(Book, book_id)
     if book:
-        book.progress = progress
-        book.current_page = current_page
-        book.status = (
-            BookStatus.READING
-            if progress > 0 and progress < 1.0
-            else BookStatus.COMPLETED if progress >= 1.0 else BookStatus.UNREAD
-        )
+        # Clamp progress between 0 and 1
+        book.progress = max(0.0, min(1.0, progress))
         session.add(book)
         session.commit()
         session.refresh(book)
-    return book
+        return book
+    return None
 
 
 def scan_books_directory(session: Session, books_path: str = "./books") -> dict:
