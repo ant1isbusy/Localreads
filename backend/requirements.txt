@@ -2,6 +2,6 @@ fastapi
 uvicorn
 sqlmodel
 ebooklib
-pypdf2
+pymupdf
 pillow
 alembic

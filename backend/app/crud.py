@@ -1,7 +1,7 @@
 from sqlmodel import Session, select
 from .models import Book, BookStatus
 from typing import List, Optional
-from .scanners import EPUBScanner
+from .scanners import EPUBScanner, PDFScanner
 import os
 
 
@@ -65,7 +65,8 @@ def scan_books_directory(session: Session, books_path: str = "./books") -> dict:
 
             if filename.lower().endswith(".epub"):
                 book_data = process_epub_file(file_path)
-                # TODO add pdf support
+            elif filename.lower().endswith(".pdf"):
+                book_data = process_pdf_file(file_path)
             else:
                 continue
 
@@ -104,6 +105,28 @@ def process_epub_file(file_path: str) -> Optional[dict]:
             "file_path": file_path,
             "file_type": "epub",
             "file_size": EPUBScanner.get_file_size(file_path),
+            "pages": metadata["pages"],
+            "cover_path": metadata["cover_path"],
+            "progress": 0.0,
+            "current_page": 0,
+            "status": BookStatus.UNREAD,
+        }
+    except Exception as e:
+        print(f"Error processing EPUB {file_path}: {e}")
+        return None
+
+
+def process_pdf_file(file_path: str) -> Optional[dict]:
+    """Process a single EPUB file and return book data"""
+    try:
+        metadata = PDFScanner.extract_metadata(file_path)
+
+        return {
+            "title": metadata["title"],
+            "author": metadata["author"],
+            "file_path": file_path,
+            "file_type": "pdf",
+            "file_size": PDFScanner.get_file_size(file_path),
             "pages": metadata["pages"],
             "cover_path": metadata["cover_path"],
             "progress": 0.0,

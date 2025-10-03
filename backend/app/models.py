@@ -3,10 +3,12 @@ from typing import Optional
 from datetime import datetime
 from enum import Enum
 
+
 class BookStatus(str, Enum):
     UNREAD = "unread"
-    READING = "reading" 
+    READING = "reading"
     COMPLETED = "completed"
+
 
 class Book(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
