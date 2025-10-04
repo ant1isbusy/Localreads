@@ -35,10 +35,7 @@ def read_root():
 
 
 @app.get("/books/", response_model=list[Book])
-def read_books(
-    sort_by: str = "title",
-    session: Session = Depends(get_session)
-):
+def read_books(sort_by: str = "title", session: Session = Depends(get_session)):
     return get_books(session, sort_by)
 
 
@@ -49,14 +46,16 @@ def read_book(book_id: int, session: Session = Depends(get_session)):
         raise HTTPException(status_code=404, detail="Book not found")
     return book
 
+
 class ProgressUpdate(BaseModel):
     progress: float
 
+
 @app.patch("/books/{book_id}/progress")
 def update_progress(
-    book_id: int, 
+    book_id: int,
     progress_update: ProgressUpdate,
-    session: Session = Depends(get_session)
+    session: Session = Depends(get_session),
 ):
     updated_book = update_book_progress(session, book_id, progress_update.progress)
     if updated_book:
@@ -65,9 +64,10 @@ def update_progress(
 
 
 @app.post("/scan/")
-def scan_books(books_path: str = "./books", session: Session = Depends(get_session)):
+def scan_books(books_path: str = "/home/antoine/books", session: Session = Depends(get_session)):
     result = scan_books_directory(session, books_path)
     return result
+
 
 @app.get("/health")
 def health_check():

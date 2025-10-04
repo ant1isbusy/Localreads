@@ -1,10 +1,10 @@
 import os
-import ebooklib
-from ebooklib import epub
-from PIL import Image
+from ebooklib import epub, ITEM_DOCUMENT, ITEM_IMAGE
 import io
 from typing import Dict, Optional
 from .base_scanner import BaseScanner
+from PIL import Image
+from bs4 import BeautifulSoup
 
 
 class EPUBScanner(BaseScanner):
@@ -72,18 +72,39 @@ class EPUBScanner(BaseScanner):
 
     @classmethod
     def extract_cover(cls, book: epub.EpubBook, file_path: str) -> Optional[str]:
-        """Extract cover image from EPUB"""
+        """Extract cover image from EPUB (handles cover.xhtml and direct cover images)"""
         try:
-            # check if there is an image item which is named cover.*, else just take the first image
             cover_item = None
-            for item in book.get_items_of_type(ebooklib.ITEM_IMAGE):
+
+            for item in book.get_items_of_type(ITEM_IMAGE):
                 name = item.get_name()
-                base_name = os.path.splitext(os.path.basename(name))[0]
-                if base_name.lower() == "cover":
+                print(name)
+                bn = os.path.splitext(os.path.basename(name))[0]
+                bn = bn.lower()
+                if bn == "cover" or "cover" in bn or "cvi" in bn:                    
                     cover_item = item
                     break
+
             if not cover_item:
-                images = list(book.get_items_of_type(ebooklib.ITEM_IMAGE))
+                for item in book.get_items_of_type(ITEM_DOCUMENT):
+                    if "cover" in item.get_name().lower() and item.get_name().endswith(
+                        ".xhtml"
+                    ):
+                        soup = BeautifulSoup(item.get_content(), "html.parser")
+                        img_tag = soup.find("img")
+                        
+                        if img_tag and img_tag.get("src"):
+                            img_src = img_tag["src"]
+
+                            # Resolve relative path
+                            img_path = os.path.normpath(
+                                os.path.join(os.path.dirname(item.get_name()), img_src)
+                            )
+                            cover_item = book.get_item_with_href(img_path)
+                            break
+
+            if not cover_item:
+                images = list(book.get_items_of_type(ITEM_IMAGE))
                 if images:
                     cover_item = images[0]
 
@@ -95,8 +116,8 @@ class EPUBScanner(BaseScanner):
                 os.makedirs("covers", exist_ok=True)
                 image.save(cover_path, "JPEG")
                 return cover_path
-            else:
-                return None
+
+            return None
 
         except Exception as e:
             print(f"Error extracting cover from {file_path}: {e}")
