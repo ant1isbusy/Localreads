@@ -41,8 +41,8 @@ const BookList = ({ books, onUpdateProgress, loading }) => {
     return (
         <div className="w-full max-w-6xl mx-auto px-4 py-8">
             {renderBookSection(readingBooks, 'Currently Reading', 'text-amber-700')}
-            {renderBookSection(unreadBooks, 'Unread', 'text-amber-700')}
             {renderBookSection(finishedBooks, 'Finished', 'text-amber-700')}
+            {renderBookSection(unreadBooks, 'Unread', 'text-amber-700')}
 
             {loading && (
                 <div className="flex justify-center py-8">
