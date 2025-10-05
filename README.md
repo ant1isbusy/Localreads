@@ -12,3 +12,5 @@ TODOs:
 - Add book search bar, filtering/sorting opts.
 - Syncthing progress with KoReader on Kindle.
 - Add star ratings and review field
+
+f amz
