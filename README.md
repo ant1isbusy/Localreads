@@ -2,7 +2,10 @@
 A simple and local reading-progress tracker.
 
 ---
-![alt text](img/image.png)
+<p align="center">
+  <img src="img/image.png" alt="Image 1" width="480"/>
+  <img src="img/IMG_0443.png" alt="Image 2" width="200"/>
+</p>
 
 TODOs:
 - Improve UI, give the page more character.
