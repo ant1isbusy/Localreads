@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import '../App.css';
+import { API_BASE_URL } from '../config';
 
 const BookCard = ({ book, onUpdateProgress }) => {
     const [showProgressModal, setShowProgressModal] = useState(false);
@@ -31,7 +32,7 @@ const BookCard = ({ book, onUpdateProgress }) => {
                     <div className="flex-shrink-0">
                         {book.cover_path ? (
                             <img
-                                src={`http://localhost:8000/${book.cover_path}`}
+                                src={`${API_BASE_URL}/${book.cover_path}`}
                                 alt={book.title}
                                 className="w-20 h-28 object-cover rounded-lg shadow-sm"
                             />

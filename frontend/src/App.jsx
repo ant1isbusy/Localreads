@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import BookList from './components/BookList';
 import './App.css';
+import { API_BASE_URL } from './config';
 
 function App() {
   const [books, setBooks] = useState([]);
@@ -15,7 +16,7 @@ function App() {
   const fetchBooks = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:8000/books/');
+      const response = await fetch(`${API_BASE_URL}/books/`);
       if (response.ok) {
         const data = await response.json();
         setBooks(data);
@@ -29,7 +30,7 @@ function App() {
 
   const updateBookProgress = async (bookId, progress) => {
     try {
-      const response = await fetch(`http://localhost:8000/books/${bookId}/progress`, {
+      const response = await fetch(`${API_BASE_URL}/books/${bookId}/progress`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ progress }),
@@ -53,7 +54,7 @@ function App() {
     setScanning(true);
     setScanResult(null);
     try {
-      const response = await fetch('http://localhost:8000/scan/', { method: 'POST' });
+      const response = await fetch(`${API_BASE_URL}/scan/`, { method: 'POST' });
       if (response.ok) {
         const result = await response.json();
         setScanResult(result);
