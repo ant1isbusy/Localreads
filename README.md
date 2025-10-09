@@ -3,8 +3,8 @@ A simple and local reading-progress tracker.
 
 ---
 <p align="center">
-  <img src="img/image.png" alt="Image 1" width="480"/>
-  <img src="img/IMG_0443.png" alt="Image 2" width="200"/>
+  <img src="img/image.png" alt="Image 1" width="554"/>
+  <img src="img/mobile.png" alt="Image 2" width="200"/>
 </p>
 
 TODOs:
