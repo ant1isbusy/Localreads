@@ -5,7 +5,12 @@ from sqlmodel import Session
 from pydantic import BaseModel
 from .db import create_db_and_tables, get_session
 from .models import Book
-from .crud import get_books, update_book_progress, scan_books_directory
+from .crud import (
+    get_books,
+    update_book_progress,
+    scan_books_directory,
+    update_book_rating_and_review,
+)
 
 app = FastAPI(title="Localreads")
 
@@ -15,7 +20,7 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:3000",
         "http://127.0.0.1:3000",
-        "http://192.168.0.118:3000"
+        "http://192.168.0.118:3000",
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -64,8 +69,29 @@ def update_progress(
     raise HTTPException(status_code=404, detail="Book not found")
 
 
+class RatingReviewUpdate(BaseModel):
+    rating_stars: int
+    review: str | None = None
+
+
+@app.patch("/books/{book_id}/rating_review")
+def update_rating_review(
+    book_id: int,
+    rating_review_update: RatingReviewUpdate,
+    session: Session = Depends(get_session),
+):
+    updated_book = update_book_rating_and_review(
+        session, book_id, rating_review_update.rating_stars, rating_review_update.review
+    )
+    if updated_book:
+        return updated_book
+    raise HTTPException(status_code=404, detail="Book not found")
+
+
 @app.post("/scan/")
-def scan_books(books_path: str = "/home/antoine/books", session: Session = Depends(get_session)):
+def scan_books(
+    books_path: str = "/home/antoine/books", session: Session = Depends(get_session)
+):
     result = scan_books_directory(session, books_path)
     return result
 

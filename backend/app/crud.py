@@ -2,6 +2,7 @@ from sqlmodel import Session, select
 from .models import Book, BookStatus
 from typing import List, Optional
 from .scanners import EPUBScanner, PDFScanner
+from datetime import datetime
 import os
 
 
@@ -12,6 +13,7 @@ def create_book(session: Session, book_data: dict) -> Book:
     session.refresh(db_book)
     return db_book
 
+
 def get_books(session: Session, sort_by: str = "title"):
 
     statement = select(Book)
@@ -21,7 +23,8 @@ def get_books(session: Session, sort_by: str = "title"):
         statement = statement.order_by(Book.progress.desc())
     books = session.exec(statement).all()
     return books
-    
+
+
 def get_book_by_id(session: Session, book_id: int) -> Optional[Book]:
     return session.get(Book, book_id)
 
@@ -29,8 +32,30 @@ def get_book_by_id(session: Session, book_id: int) -> Optional[Book]:
 def update_book_progress(session: Session, book_id: int, progress: float):
     book = session.get(Book, book_id)
     if book:
-        # Clamp progress between 0 and 1
         book.progress = max(0.0, min(1.0, progress))
+        if progress == 0.0:
+            book.status = BookStatus.UNREAD
+        elif progress < 1.0:
+            book.status = BookStatus.READING
+        else:
+            book.status = BookStatus.FINISHED
+
+        book.last_updated = datetime.now()
+        session.add(book)
+        session.commit()
+        session.refresh(book)
+        return book
+    return None
+
+
+def update_book_rating_and_review(
+    session: Session, book_id: int, rating_stars: int, review: Optional[str]
+):
+    book = session.get(Book, book_id)
+    if book:
+        book.rating_stars = max(0, min(5, rating_stars))
+        book.review = review
+        book.last_updated = datetime.now()
         session.add(book)
         session.commit()
         session.refresh(book)

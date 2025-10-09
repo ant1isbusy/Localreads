@@ -7,7 +7,7 @@ from enum import Enum
 class BookStatus(str, Enum):
     UNREAD = "unread"
     READING = "reading"
-    COMPLETED = "completed"
+    FINISHED = "finished"
 
 
 class Book(SQLModel, table=True):
@@ -21,6 +21,8 @@ class Book(SQLModel, table=True):
     cover_path: Optional[str] = None
     progress: float = 0.0
     current_page: int = 0
+    rating_stars: int = 0
+    review: Optional[str] = None
     status: BookStatus = BookStatus.UNREAD
     last_updated: datetime = Field(default_factory=datetime.now)
     created_at: datetime = Field(default_factory=datetime.now)
