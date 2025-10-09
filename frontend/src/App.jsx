@@ -67,6 +67,36 @@ function App() {
     }
   };
 
+  const updateBookRatingReview = async (bookId, ratingStars, review) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/books/${bookId}/rating_review`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          rating_stars: ratingStars,
+          review: review
+        }),
+      });
+
+      if (response.ok) {
+        const updatedBook = await response.json();
+        setBooks(prevBooks =>
+          prevBooks.map(book =>
+            book.id === bookId ? {
+              ...book,
+              rating_stars: updatedBook.rating_stars,
+              review: updatedBook.review
+            } : book
+          )
+        );
+      } else {
+        console.error('Failed to update rating/review:', response.status);
+      }
+    } catch (error) {
+      console.error('Error updating rating/review:', error);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-amber-100 flex flex-col">
       {/* Header */}
@@ -95,6 +125,7 @@ function App() {
         <BookList
           books={books}
           onUpdateProgress={updateBookProgress}
+          onUpdateRatingReview={updateBookRatingReview}
           loading={loading}
         />
         {scanResult && (

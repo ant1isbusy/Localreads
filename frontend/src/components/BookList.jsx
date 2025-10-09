@@ -2,7 +2,7 @@ import React from 'react';
 import BookCard from './BookCard';
 import '../App.css';
 
-const BookList = ({ books, onUpdateProgress, loading }) => {
+const BookList = ({ books, onUpdateProgress, onUpdateRatingReview, loading }) => {
     // Sort books: reading > unread > finished
     const sortedBooks = [...books].sort((a, b) => {
         if (a.progress > 0 && a.progress < 1 && !(b.progress > 0 && b.progress < 1)) return -1;
@@ -31,6 +31,7 @@ const BookList = ({ books, onUpdateProgress, loading }) => {
                             key={book.id}
                             book={book}
                             onUpdateProgress={onUpdateProgress}
+                            onUpdateRatingReview={onUpdateRatingReview}
                         />
                     ))}
                 </div>
