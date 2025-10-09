@@ -3,6 +3,8 @@ import React, { useState, useRef, useEffect } from 'react';
 const StarRating = ({ rating, onRatingChange, size = 'md' }) => {
     const [hoverRating, setHoverRating] = useState(0);
     const [isTouchDragging, setIsTouchDragging] = useState(false);
+    const [touchStartTime, setTouchStartTime] = useState(0);
+    const [touchStartY, setTouchStartY] = useState(0);
     const starContainerRef = useRef(null);
 
     const sizeClasses = {
@@ -23,37 +25,54 @@ const StarRating = ({ rating, onRatingChange, size = 'md' }) => {
         setHoverRating(0);
     };
 
-    // Touch event handlers
     const handleTouchStart = (e) => {
-        setIsTouchDragging(true);
-        handleTouchMove(e);
+        const touch = e.touches[0];
+        setTouchStartTime(Date.now());
+        setTouchStartY(touch.clientY);
+        setIsTouchDragging(false);
     };
 
     const handleTouchMove = (e) => {
-        if (!isTouchDragging && e.type !== 'touchstart') return;
-
         const touch = e.touches[0];
         const starContainer = starContainerRef.current;
         if (!starContainer) return;
 
-        const rect = starContainer.getBoundingClientRect();
-        const x = touch.clientX - rect.left;
+        const deltaY = Math.abs(touch.clientY - touchStartY);
+        const deltaX = Math.abs(touch.clientX - e.touches[0].clientX);
 
-        const cancelZoneWidth = rect.width / 5 * 0.1;
+        // If significant vertical movement, treat as scroll and ignore
+        if (deltaY > 10 && deltaY > deltaX) {
+            setIsTouchDragging(false);
+            return;
+        }
 
-        if (x < cancelZoneWidth) {
-            setHoverRating(0);
-        } else {
-            const starWidth = rect.width / 5;
-            const starIndex = Math.floor((x - cancelZoneWidth) / starWidth) + 1;
-            const clampedStar = Math.max(1, Math.min(5, starIndex));
-            setHoverRating(clampedStar);
+        const touchDuration = Date.now() - touchStartTime;
+        if (touchDuration > 50 && deltaY < 15) {
+            setIsTouchDragging(true);
+
+            const rect = starContainer.getBoundingClientRect();
+            const x = touch.clientX - rect.left;
+
+            const cancelZoneWidth = rect.width / 5 * 0.2;
+
+            if (x < cancelZoneWidth) {
+                setHoverRating(0);
+            } else {
+                const starWidth = rect.width / 5;
+                const starIndex = Math.floor((x - cancelZoneWidth) / starWidth) + 1;
+                const clampedStar = Math.max(1, Math.min(5, starIndex));
+                setHoverRating(clampedStar);
+            }
         }
     };
 
-    const handleTouchEnd = () => {
-        if (hoverRating > 0) {
-            onRatingChange(hoverRating);
+    const handleTouchEnd = (e) => {
+        if (isTouchDragging) {
+            if (hoverRating > 0) {
+                onRatingChange(hoverRating);
+            } else {
+                onRatingChange(0);
+            }
         }
         setIsTouchDragging(false);
         setHoverRating(0);
@@ -68,7 +87,7 @@ const StarRating = ({ rating, onRatingChange, size = 'md' }) => {
     return (
         <div
             ref={starContainerRef}
-            className="flex items-center space-x-1 select-none"
+            className="flex items-center space-x-1 select-none relative touch-pan-y"
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
@@ -80,7 +99,7 @@ const StarRating = ({ rating, onRatingChange, size = 'md' }) => {
                     <button
                         key={star}
                         type="button"
-                        className={`${sizeClasses[size]} transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 rounded touch-none`}
+                        className={`${sizeClasses[size]} transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 rounded touch-pan-y`}
                         onClick={() => handleClick(star)}
                         onMouseEnter={() => handleMouseEnter(star)}
                         onMouseLeave={handleMouseLeave}
@@ -88,8 +107,8 @@ const StarRating = ({ rating, onRatingChange, size = 'md' }) => {
                     >
                         <svg
                             className={`w-full h-full ${isFilled
-                                ? 'text-amber-400 fill-current'
-                                : 'text-gray-300 fill-current'
+                                    ? 'text-amber-400 fill-current'
+                                    : 'text-gray-300 fill-current'
                                 } ${isTouchDragging ? 'scale-105' : ''}`}
                             viewBox="0 0 20 20"
                         >
