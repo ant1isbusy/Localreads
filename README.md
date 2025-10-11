@@ -40,6 +40,7 @@ npm run dev -- --host
 3. **Access**: http://localhost:3000 or http://[your-ip]:3000 from other devices.
 ---
 #### TODO
+- Scan subfolders in books path
 - Improve UI design
 - Add search and filtering
 - Sync progress with KoReader on Kindle
