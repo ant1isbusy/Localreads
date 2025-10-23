@@ -13,7 +13,6 @@ A local reading progress tracker for your ebook collection. Track reading progre
 - Star ratings and reviews
 - Automatic book cover and EPUB metadata extraction
 - Responsive design for desktop and mobile
-- Local storage - no cloud required
 
 ## Tech Stack
 
