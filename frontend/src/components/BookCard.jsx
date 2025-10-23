@@ -82,9 +82,9 @@ const BookCard = ({ book, onUpdateProgress, onUpdateRatingReview }) => {
                             <div className="flex-grow">
                                 {progressStatus === 'reading' && (
                                     <div className="space-y-2">
-                                        <div className="w-full bg-blue-200 rounded-full h-2">
+                                        <div className="w-full bg-gray-200 rounded-full h-2">
                                             <div
-                                                className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                                                className="bg-green-600 h-2 rounded-full transition-all duration-300"
                                                 style={{ width: `${Math.round(book.progress * 100)}%` }}
                                             ></div>
                                         </div>

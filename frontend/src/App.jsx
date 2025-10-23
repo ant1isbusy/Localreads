@@ -110,8 +110,7 @@ function App() {
       <header className="border-b border-gray-200 bg-white/80 backdrop-blur-sm sticky top-0 z-40">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-gray-900 text-white font-serif flex items-center justify-center rounded-md">LR</div>
-            <h1 className="text-3xl font-serif tracking-tight">Localreads</h1>
+            <h1 className="text-4xl font-serif tracking-tight">Localreads</h1>
           </div>
           <button
             onClick={scanLibrary}

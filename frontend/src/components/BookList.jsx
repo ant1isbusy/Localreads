@@ -18,12 +18,12 @@ const BookList = ({ books, onUpdateProgress, onUpdateRatingReview, loading }) =>
     const unreadBooks = sortedBooks.filter(book => book.progress === 0);
     const finishedBooks = sortedBooks.filter(book => book.progress === 1);
 
-    const renderBookSection = (books, title, colorClass) => {
+    const renderBookSection = (books, title) => {
         if (books.length === 0) return null;
         return (
             <div className="mb-5">
-                <h2 className={`font-serif text-[22px] font-bold mb-3 ${colorClass}`}>
-                    {title} <span className="text-black font-bold">({books.length})</span>
+                <h2 className={"font-serif text-[22px] font-bold mb-3 ml-1"}>
+                    {title} ({books.length})
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2">
                     {books.map(book => (
