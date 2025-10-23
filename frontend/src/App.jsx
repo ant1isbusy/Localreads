@@ -13,6 +13,13 @@ function App() {
     fetchBooks();
   }, []);
 
+  useEffect(() => {
+    if (scanResult) {
+      const timer = setTimeout(() => setScanResult(null), 1300);
+      return () => clearTimeout(timer);
+    }
+  }, [scanResult]);
+
   const fetchBooks = async () => {
     try {
       setLoading(true);
@@ -109,9 +116,9 @@ function App() {
           <button
             onClick={scanLibrary}
             disabled={scanning}
-            className="px-4 py-2 bg-gray-900 text-white rounded-md hover:bg-gray-800 transition disabled:opacity-50"
+            className="px-3 py-1 bg-gray-200 border-2 border-gray-300 font-sans text-sm rounded-full text-black hover:bg-gray-800 hover:text-white transition disabled:opacity-50"
           >
-            {scanning ? 'Scanning…' : 'Scan Library'}
+            {scanning ? 'Scanning... ' : 'Scan Library'}
           </button>
         </div>
       </header>
@@ -125,7 +132,16 @@ function App() {
           loading={loading}
         />
         {scanResult && (
-          <div className={`fixed bottom-6 right-6 z-50 px-6 py-4 rounded-xl shadow-lg ${scanResult.status === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+          <div
+            className={`
+      fixed bottom-6 right-6 z-50 px-6 py-4 rounded-xl shadow-lg
+      transition-opacity duration-500
+      ${scanResult ? 'opacity-100' : 'opacity-0'}
+      ${scanResult.status === 'success'
+                ? 'bg-green-100 text-green-800'
+                : 'bg-red-100 text-red-800'}
+    `}
+          >
             {scanResult.message}
           </div>
         )}

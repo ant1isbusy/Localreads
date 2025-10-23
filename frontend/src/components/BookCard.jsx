@@ -22,10 +22,8 @@ const BookCard = ({ book, onUpdateProgress, onUpdateRatingReview }) => {
 
     const handleRatingReviewSubmit = (e) => {
         e.preventDefault();
-        if (ratingInput > 0) {
-            onUpdateRatingReview(book.id, ratingInput, reviewInput);
-            setShowRatingModal(false);
-        }
+        onUpdateRatingReview(book.id, ratingInput, reviewInput);
+        setShowRatingModal(false);
     };
 
     const getProgressStatus = () => {
@@ -37,17 +35,17 @@ const BookCard = ({ book, onUpdateProgress, onUpdateRatingReview }) => {
     const progressStatus = getProgressStatus();
     return (
         <>
-            <div className="bg-white border border-gray-200 rounded-sm p-6 hover:border-gray-400 transition-colors">
+            <div className="bg-white border-2 border-gray-200 rounded-md p-4 hover:border-gray-400 hover:bg-gray-50 transition-colors">
                 <div className="flex gap-6">
                     <div className="flex-shrink-0">
                         {book.cover_path ? (
                             <img
                                 src={`${API_BASE_URL}/${book.cover_path}`}
                                 alt={book.title}
-                                className="w-24 h-35 object-cover rounded-md"
+                                className="w-20 h-30 object-cover rounded-md"
                             />
                         ) : (
-                            <div className="w-24 h-35 bg-gray-100 rounded-md flex items-center justify-center text-gray-400 text-xs">
+                            <div className="w-20 h-30 bg-gray-100 rounded-md flex items-center justify-center text-gray-400 text-xs">
                                 No Cover
                             </div>
                         )}
@@ -55,14 +53,18 @@ const BookCard = ({ book, onUpdateProgress, onUpdateRatingReview }) => {
 
                     {/* Book Info */}
                     <div className="flex-grow">
-                        <h3 className="font-serif text-2xl mb-1">{book.title}</h3>
-                        <p className="text-gray-500 mb-4">{book.author}</p>
+                        <h3 className="font-sans text-md font-semibold mb-0">{book.title}</h3>
+                        <p className="text-gray-500 text-sm mb-1">{book.author}</p>
 
                         {/* Rating Display */}
                         <div className="mb-4">
                             <StarRating
                                 rating={book.rating_stars || 0}
                                 onRatingChange={(rating) => {
+                                    if (rating === (book.rating_stars || 0)) {
+                                        setRatingInput(0);
+                                        return;
+                                    }
                                     setRatingInput(rating);
                                     setShowRatingModal(true);
                                 }}
@@ -80,24 +82,20 @@ const BookCard = ({ book, onUpdateProgress, onUpdateRatingReview }) => {
                             <div className="flex-grow">
                                 {progressStatus === 'reading' && (
                                     <div className="space-y-2">
-                                        <div className="w-full bg-amber-200 rounded-full h-2">
+                                        <div className="w-full bg-blue-200 rounded-full h-2">
                                             <div
-                                                className="bg-amber-500 h-2 rounded-full transition-all duration-300"
+                                                className="bg-blue-500 h-2 rounded-full transition-all duration-300"
                                                 style={{ width: `${Math.round(book.progress * 100)}%` }}
                                             ></div>
                                         </div>
-                                        <span className="text-sm text-amber-700">
+                                        <span className="text-sm text-gray-800">
                                             {Math.round(book.progress * 100)}% read
                                         </span>
                                     </div>
                                 )}
-
-                                {(progressStatus === 'unread' || progressStatus === 'finished') && (
-                                    <span className={`text-sm px-3 py-1.5 rounded-full font-medium ${progressStatus === 'unread'
-                                        ? 'bg-amber-100 text-amber-700 border border-amber-200'
-                                        : 'bg-green-100 text-green-700 border border-green-200'
-                                        }`}>
-                                        {progressStatus === 'unread' ? 'Unread' : 'Finished'}
+                                {progressStatus === 'finished' && (
+                                    <span className={"text-xs px-3 py-1.5 rounded-full font-medium bg-green-100 text-green-700 border border-green-200"}>
+                                        {"Finished"}
                                     </span>
                                 )}
                             </div>
@@ -105,9 +103,9 @@ const BookCard = ({ book, onUpdateProgress, onUpdateRatingReview }) => {
                             <div className="flex space-x-2 ml-4">
                                 <button
                                     onClick={() => setShowProgressModal(true)}
-                                    className="px-3 py-2 bg-amber-500 text-white text-sm font-medium rounded-lg hover:bg-amber-600 transition-colors shadow-sm"
+                                    className="px-2 py-1 bg-gray-100 text-gray-700 text-sm font-thin rounded-md hover:bg-blue-600 hover:text-white transition-colors shadow-sm"
                                 >
-                                    Update Progress
+                                    Update
                                 </button>
                             </div>
                         </div>
@@ -117,9 +115,9 @@ const BookCard = ({ book, onUpdateProgress, onUpdateRatingReview }) => {
 
             {/* Progress Update Modal */}
             {showProgressModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-xl p-6 w-full max-w-md mx-auto">
-                        <h3 className="font-semibold text-amber-900 text-lg mb-4">Update Reading Progress</h3>
+                <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-lg p-6 w-full max-w-md mx-auto shadow-xl border border-gray-200">
+                        <h3 className="font-semibold text-gray-900 text-lg mb-4">Update Reading Progress</h3>
                         <form onSubmit={handleProgressSubmit}>
                             <input
                                 type="number"
@@ -128,20 +126,20 @@ const BookCard = ({ book, onUpdateProgress, onUpdateRatingReview }) => {
                                 placeholder="Enter percentage (0-100)"
                                 value={progressInput}
                                 onChange={(e) => setProgressInput(e.target.value)}
-                                className="w-full px-4 py-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent text-amber-900 placeholder-amber-400"
+                                className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500 bg-white"
                                 autoFocus
                             />
                             <div className="flex gap-3 mt-6">
                                 <button
                                     type="submit"
-                                    className="flex-1 bg-amber-500 text-white py-3 rounded-lg font-medium hover:bg-amber-600 transition-colors shadow-sm"
+                                    className="flex-1 bg-gray-900 text-white py-3 rounded-md font-medium hover:bg-gray-800 transition-colors shadow-sm"
                                 >
                                     Save Progress
                                 </button>
                                 <button
                                     type="button"
                                     onClick={() => setShowProgressModal(false)}
-                                    className="flex-1 bg-amber-100 text-amber-700 py-3 rounded-lg font-medium hover:bg-amber-200 transition-colors"
+                                    className="flex-1 bg-gray-100 text-gray-700 py-3 rounded-md font-medium hover:bg-gray-200 transition-colors border border-gray-300"
                                 >
                                     Cancel
                                 </button>
@@ -153,13 +151,13 @@ const BookCard = ({ book, onUpdateProgress, onUpdateRatingReview }) => {
 
             {/* Rating & Review Modal */}
             {showRatingModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-xl p-6 w-full max-w-md mx-auto">
-                        <h3 className="font-semibold text-amber-900 text-lg mb-4">Rate & Review</h3>
+                <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-lg p-6 w-full max-w-md mx-auto shadow-xl border border-gray-200">
+                        <h3 className="font-semibold text-gray-900 text-lg mb-4">Rate & Review</h3>
                         <form onSubmit={handleRatingReviewSubmit}>
                             {/* Star Rating */}
                             <div className="mb-6">
-                                <label className="block text-amber-700 text-sm font-medium mb-3">
+                                <label className="block text-gray-700 text-sm font-medium mb-3">
                                     How many stars?
                                 </label>
                                 <StarRating
@@ -171,7 +169,7 @@ const BookCard = ({ book, onUpdateProgress, onUpdateRatingReview }) => {
 
                             {/* Review Textarea */}
                             <div className="mb-6">
-                                <label htmlFor="review" className="block text-amber-700 text-sm font-medium mb-2">
+                                <label htmlFor="review" className="block text-gray-700 text-sm font-medium mb-2">
                                     Your Review (optional)
                                 </label>
                                 <textarea
@@ -180,15 +178,14 @@ const BookCard = ({ book, onUpdateProgress, onUpdateRatingReview }) => {
                                     placeholder="Share your thoughts about this book..."
                                     value={reviewInput}
                                     onChange={(e) => setReviewInput(e.target.value)}
-                                    className="w-full px-4 py-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent text-amber-900 placeholder-amber-400 resize-none"
+                                    className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500 bg-white resize-none"
                                 />
                             </div>
 
                             <div className="flex gap-3">
                                 <button
                                     type="submit"
-                                    disabled={ratingInput === 0}
-                                    className="flex-1 bg-amber-500 text-white py-3 rounded-lg font-medium hover:bg-amber-600 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="flex-1 bg-gray-900 text-white py-3 rounded-md font-medium hover:bg-gray-800 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     Save Rating
                                 </button>
@@ -199,7 +196,7 @@ const BookCard = ({ book, onUpdateProgress, onUpdateRatingReview }) => {
                                         setRatingInput(book.rating_stars || 0);
                                         setReviewInput(book.review || '');
                                     }}
-                                    className="flex-1 bg-amber-100 text-amber-700 py-3 rounded-lg font-medium hover:bg-amber-200 transition-colors"
+                                    className="flex-1 bg-gray-100 text-gray-700 py-3 rounded-md font-medium hover:bg-gray-200 transition-colors border border-gray-300"
                                 >
                                     Cancel
                                 </button>

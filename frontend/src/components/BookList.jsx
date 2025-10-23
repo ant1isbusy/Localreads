@@ -21,17 +21,18 @@ const BookList = ({ books, onUpdateProgress, onUpdateRatingReview, loading }) =>
     const renderBookSection = (books, title, colorClass) => {
         if (books.length === 0) return null;
         return (
-            <div className="mb-8">
-                <h2 className={`text-lg font-serif text-xl mb-4 ${colorClass}`}>
-                    {title} <span className="text-amber-600 font-normal">({books.length})</span>
+            <div className="mb-5">
+                <h2 className={`font-serif text-[22px] font-bold mb-3 ${colorClass}`}>
+                    {title} <span className="text-black font-bold">({books.length})</span>
                 </h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2">
                     {books.map(book => (
                         <BookCard
                             key={book.id}
                             book={book}
                             onUpdateProgress={onUpdateProgress}
                             onUpdateRatingReview={onUpdateRatingReview}
+
                         />
                     ))}
                 </div>
@@ -40,10 +41,10 @@ const BookList = ({ books, onUpdateProgress, onUpdateRatingReview, loading }) =>
     };
 
     return (
-        <div className="w-full max-w-6xl mx-auto px-4 py-8">
-            {renderBookSection(readingBooks, 'Currently Reading', 'text-amber-700')}
-            {renderBookSection(finishedBooks, 'Finished', 'text-amber-700')}
-            {renderBookSection(unreadBooks, 'Unread', 'text-amber-700')}
+        <div className="w-full max-w-6xl mx-auto px-4 py-6">
+            {renderBookSection(readingBooks, 'Currently Reading', 'text-black')}
+            {renderBookSection(finishedBooks, 'Finished', 'text-black')}
+            {renderBookSection(unreadBooks, 'Unread', 'text-black')}
 
             {loading && (
                 <div className="flex justify-center py-8">
