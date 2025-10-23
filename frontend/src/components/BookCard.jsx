@@ -35,30 +35,28 @@ const BookCard = ({ book, onUpdateProgress, onUpdateRatingReview }) => {
     };
 
     const progressStatus = getProgressStatus();
-
     return (
         <>
-            <div className="bg-white rounded-xl shadow-sm border border-amber-200 p-6 hover:shadow-md transition-shadow hover:border-amber-300">
-                <div className="flex gap-6 items-start">
-                    {/* Book Cover */}
+            <div className="bg-white border border-gray-200 rounded-sm p-6 hover:border-gray-400 transition-colors">
+                <div className="flex gap-6">
                     <div className="flex-shrink-0">
                         {book.cover_path ? (
                             <img
                                 src={`${API_BASE_URL}/${book.cover_path}`}
                                 alt={book.title}
-                                className="w-20 h-28 object-cover rounded-lg shadow-sm"
+                                className="w-24 h-35 object-cover rounded-md"
                             />
                         ) : (
-                            <div className="w-20 h-28 bg-amber-100 rounded-lg flex items-center justify-center shadow-sm border border-amber-200">
-                                <span className="text-amber-500 text-xs text-center px-1">No Cover</span>
+                            <div className="w-24 h-35 bg-gray-100 rounded-md flex items-center justify-center text-gray-400 text-xs">
+                                No Cover
                             </div>
                         )}
                     </div>
 
                     {/* Book Info */}
-                    <div className="flex-grow min-w-0">
-                        <h3 className="font-semibold text-amber-900 text-lg mb-1">{book.title}</h3>
-                        <p className="text-amber-700 text-base mb-4">{book.author}</p>
+                    <div className="flex-grow">
+                        <h3 className="font-serif text-2xl mb-1">{book.title}</h3>
+                        <p className="text-gray-500 mb-4">{book.author}</p>
 
                         {/* Rating Display */}
                         <div className="mb-4">
@@ -96,8 +94,8 @@ const BookCard = ({ book, onUpdateProgress, onUpdateRatingReview }) => {
 
                                 {(progressStatus === 'unread' || progressStatus === 'finished') && (
                                     <span className={`text-sm px-3 py-1.5 rounded-full font-medium ${progressStatus === 'unread'
-                                            ? 'bg-amber-100 text-amber-700 border border-amber-200'
-                                            : 'bg-green-100 text-green-700 border border-green-200'
+                                        ? 'bg-amber-100 text-amber-700 border border-amber-200'
+                                        : 'bg-green-100 text-green-700 border border-green-200'
                                         }`}>
                                         {progressStatus === 'unread' ? 'Unread' : 'Finished'}
                                     </span>

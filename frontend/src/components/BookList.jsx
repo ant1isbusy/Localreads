@@ -22,7 +22,7 @@ const BookList = ({ books, onUpdateProgress, onUpdateRatingReview, loading }) =>
         if (books.length === 0) return null;
         return (
             <div className="mb-8">
-                <h2 className={`text-lg font-semibold mb-4 ${colorClass}`}>
+                <h2 className={`text-lg font-serif text-xl mb-4 ${colorClass}`}>
                     {title} <span className="text-amber-600 font-normal">({books.length})</span>
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-6">
