@@ -3,8 +3,8 @@
 A local reading progress tracker for your ebook collection. Track reading progress, rate books, and manage your library - all locally.
 
 <p align="center">
-  <img src="img/image.png" alt="Image 1" width="554"/>
-  <img src="img/mobile.png" alt="Image 2" width="200"/>
+  <img src="img/image.png" alt="Image 1" width="553"/>
+  <img src="img/mobile.png" alt="Image 2" width="204"/>
 </p>
 
 ## Features
