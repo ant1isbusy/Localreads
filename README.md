@@ -22,6 +22,7 @@ A local reading progress tracker for your ebook collection. Track reading progre
 ## Setup
 
 1. **Backend:**
+
 ```bash
 cd backend
 python -m venv venv
@@ -31,16 +32,20 @@ uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
 2. **Frontend:**
+
 ```bash
 cd frontend
 npm install
 npm run dev -- --host
 ```
-3. **Access**: http://localhost:3000 or http://[your-ip]:3000 from other devices.
+
+3. **Access**: <http://localhost:3000> or http://[your-ip]:3000 from other devices.
+
 ---
+
 #### TODO
+
 - Scan subfolders in books path
-- Improve UI design
 - Add search and filtering
 - Sync progress with KoReader on Kindle
 - Add more sorting options
