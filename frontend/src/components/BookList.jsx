@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import BookCard from './BookCard';
+import BookDetailModal from './BookDetailModal';
 import '../App.css';
 
 const BookList = ({ books, onUpdateProgress, onUpdateRatingReview, loading }) => {
-    // Sort books: reading > unread > finished
+    const [selectedBook, setSelectedBook] = useState(null);
+
     const sortedBooks = [...books].sort((a, b) => {
         if (a.progress > 0 && a.progress < 1 && !(b.progress > 0 && b.progress < 1)) return -1;
         if (b.progress > 0 && b.progress < 1 && !(a.progress > 0 && a.progress < 1)) return 1;
@@ -18,11 +20,20 @@ const BookList = ({ books, onUpdateProgress, onUpdateRatingReview, loading }) =>
     const unreadBooks = sortedBooks.filter(book => book.progress === 0);
     const finishedBooks = sortedBooks.filter(book => book.progress === 1);
 
+    const handleUpdate = async (bookId, updates) => {
+        if (updates.progress !== undefined || updates.current_page !== undefined) {
+            await onUpdateProgress(bookId, updates.progress, updates.current_page);
+        }
+        if (updates.rating_stars !== undefined || updates.review !== undefined) {
+            await onUpdateRatingReview(bookId, updates.rating_stars, updates.review);
+        }
+    };
+
     const renderBookSection = (books, title) => {
         if (books.length === 0) return null;
         return (
             <div className="mb-5">
-                <div className="flex items-center justify-between mb-2 px-2">
+                <div className="flex items-center justify-between mb-3 px-2">
                     <h2 className="font-serif text-[22px] font-bold">
                         {title}
                     </h2>
@@ -35,8 +46,7 @@ const BookList = ({ books, onUpdateProgress, onUpdateRatingReview, loading }) =>
                         <BookCard
                             key={book.id}
                             book={book}
-                            onUpdateProgress={onUpdateProgress}
-                            onUpdateRatingReview={onUpdateRatingReview}
+                            onClick={setSelectedBook}
                         />
                     ))}
                 </div>
@@ -45,10 +55,10 @@ const BookList = ({ books, onUpdateProgress, onUpdateRatingReview, loading }) =>
     };
 
     return (
-        <div className="w-full max-w-6xl mx-auto px-4 py-6">
-            {renderBookSection(readingBooks, 'Currently Reading', 'text-black')}
-            {renderBookSection(unreadBooks, 'Unread', 'text-black')}
-            {renderBookSection(finishedBooks, 'Finished', 'text-black')}
+        <div className="w-full max-w-6xl mx-auto px-4 py-4">
+            {renderBookSection(readingBooks, 'Currently Reading')}
+            {renderBookSection(unreadBooks, 'Unread')}
+            {renderBookSection(finishedBooks, 'Finished')}
 
             {loading && (
                 <div className="flex justify-center py-8">
@@ -60,6 +70,14 @@ const BookList = ({ books, onUpdateProgress, onUpdateRatingReview, loading }) =>
                 <div className="text-center py-12">
                     <p className="text-amber-700 text-lg">No books found in your library.</p>
                 </div>
+            )}
+
+            {selectedBook && (
+                <BookDetailModal
+                    book={selectedBook}
+                    onClose={() => setSelectedBook(null)}
+                    onUpdate={handleUpdate}
+                />
             )}
         </div>
     );
