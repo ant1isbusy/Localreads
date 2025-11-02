@@ -22,9 +22,14 @@ const BookList = ({ books, onUpdateProgress, onUpdateRatingReview, loading }) =>
         if (books.length === 0) return null;
         return (
             <div className="mb-5">
-                <h2 className={"font-serif text-[22px] font-bold mb-3 ml-1"}>
-                    {title} ({books.length})
-                </h2>
+                <div className="flex items-center justify-between mb-2 px-2">
+                    <h2 className="font-serif text-[22px] font-bold">
+                        {title}
+                    </h2>
+                    <span className="font-serif text-[22px] font-bold text-black">
+                        {books.length}
+                    </span>
+                </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2">
                     {books.map(book => (
                         <BookCard
@@ -32,7 +37,6 @@ const BookList = ({ books, onUpdateProgress, onUpdateRatingReview, loading }) =>
                             book={book}
                             onUpdateProgress={onUpdateProgress}
                             onUpdateRatingReview={onUpdateRatingReview}
-
                         />
                     ))}
                 </div>
