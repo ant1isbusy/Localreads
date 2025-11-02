@@ -38,12 +38,12 @@ const BookCard = ({ book, onClick }) => {
                     {/* Rating */}
                     {book.rating_stars > 0 && (
                         <div className="mb-2">
-                            <StarRating rating={book.rating_stars} size="small" readonly={true} />
+                            <StarRating rating={book.rating_stars} size="md" readonly={true} />
                         </div>
                     )}
 
                     {/* Progress Bar */}
-                    {book.progress > 0 && (
+                    {book.progress > 0 && book.progress < 1 && (
                         <div className="mt-2">
                             <div className="w-full bg-gray-200 rounded-full h-2">
                                 <div

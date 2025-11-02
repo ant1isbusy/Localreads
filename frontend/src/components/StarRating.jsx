@@ -1,16 +1,26 @@
 import React, { useState } from 'react';
 
-const StarRating = ({ rating = 0, onRatingChange, size = 'md' }) => {
+const StarRating = ({ rating = 0, onRatingChange, size = 'md', readonly = false }) => {
     const [hover, setHover] = useState(null);
 
     const sizeClasses = {
-        sm: 'w-5 h-5',
-        md: 'w-6 h-6',
-        lg: 'w-8 h-8',
+        small: 'w-3.5 h-3.5',
+        sm: 'w-4 h-4',
+        md: 'w-5 h-5',
+        lg: 'w-6 h-6',
+    };
+
+    const textSizeClasses = {
+        small: 'text-xs',
+        sm: 'text-xs',
+        md: 'text-sm',
+        lg: 'text-base',
     };
 
     const handleClick = (value) => {
-        onRatingChange(value === rating ? 0 : value);
+        if (!readonly) {
+            onRatingChange(value === rating ? 0 : value);
+        }
     };
 
     return (
@@ -23,15 +33,16 @@ const StarRating = ({ rating = 0, onRatingChange, size = 'md' }) => {
                         key={value}
                         type="button"
                         className={`
-              ${sizeClasses[size]}
-              transition-transform hover:scale-110
-              focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2
-              rounded mr-1
-            `}
+                            ${sizeClasses[size]}
+                            ${readonly ? 'cursor-default' : 'transition-transform hover:scale-110 cursor-pointer'}
+                            focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2
+                            rounded mr-0.5
+                        `}
                         onClick={() => handleClick(value)}
-                        onMouseEnter={() => setHover(value)}
-                        onMouseLeave={() => setHover(null)}
+                        onMouseEnter={() => !readonly && setHover(value)}
+                        onMouseLeave={() => !readonly && setHover(null)}
                         aria-label={`Rate ${value} star${value !== 1 ? 's' : ''}`}
+                        disabled={readonly}
                     >
                         <svg
                             className={`w-full h-full ${filled ? 'text-amber-400' : 'text-gray-300'
@@ -44,9 +55,11 @@ const StarRating = ({ rating = 0, onRatingChange, size = 'md' }) => {
                 );
             })}
 
-            <span className="ml-2 text-sm text-gray-700 font-medium">
-                {rating > 0 ? `${rating}/5` : ''}
-            </span>
+            {rating > 0 && (
+                <span className={`ml-1.5 ${textSizeClasses[size]} text-gray-700 font-medium`}>
+                    {rating}/5
+                </span>
+            )}
         </div>
     );
 };
