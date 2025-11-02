@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import BookList from './components/BookList';
+import RTYPanel from './components/RTYPanel';
 import './App.css';
 import { API_BASE_URL } from './config';
 
@@ -124,6 +125,8 @@ function App() {
 
       {/* Main Content */}
       <main className="flex-1 w-full">
+        <RTYPanel>
+        </RTYPanel>
         <BookList
           books={books}
           onUpdateProgress={updateBookProgress}
