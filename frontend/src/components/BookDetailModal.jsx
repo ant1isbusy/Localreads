@@ -71,8 +71,8 @@ const BookDetailModal = ({ book, onClose, onUpdate }) => {
                     {/* Book Info Section */}
                     <div className="flex flex-col md:flex-row gap-6 mb-6">
                         {/* Cover */}
-                        <div className="flex-shrink-0">
-                            <div className="w-48 h-72 rounded-lg overflow-hidden border-2 border-gray-200 shadow-md">
+                        <div className="flex-shrink-0 mx-auto md:mx-0">
+                            <div className="w-36 h-54 rounded-lg overflow-hidden border-2 border-gray-200 shadow-md">
                                 {book.cover_path ? (
                                     <img
                                         src={`${API_BASE_URL}/${book.cover_path}`}
@@ -94,7 +94,7 @@ const BookDetailModal = ({ book, onClose, onUpdate }) => {
                             <h3 className="font-serif text-3xl font-bold text-gray-900 mb-2">
                                 {book.title}
                             </h3>
-                            <p className="text-xl text-gray-600 mb-4">{book.author}</p>
+                            <p className="text-lg text-gray-600 mb-0">{book.author}</p>
                             {book.pages && (
                                 <p className="text-sm text-gray-500">{book.pages} pages</p>
                             )}
@@ -102,13 +102,10 @@ const BookDetailModal = ({ book, onClose, onUpdate }) => {
                     </div>
 
                     {/* Progress Section */}
-                    <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-                        <h4 className="font-serif text-lg font-semibold mb-3">Reading Progress</h4>
+                    <div className="mb-6 p-3 shadow-md bg-gray-100 border border-gray-200 rounded-lg">
+                        <h4 className="font-serif text-xl font-semibold mb-3">Reading Progress: {Math.round(progress * 100)}%</h4>
 
                         <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Progress: {Math.round(progress * 100)}%
-                            </label>
                             <input
                                 type="range"
                                 min="0"
@@ -116,13 +113,16 @@ const BookDetailModal = ({ book, onClose, onUpdate }) => {
                                 step="0.01"
                                 value={progress}
                                 onChange={handleProgressChange}
-                                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                                style={{
+                                    background: `linear-gradient(to right, #ff9f9fff 0%, #77eb25ff ${progress * 100}%, #acacacff ${progress * 100}%, #acacacff 100%)`
+                                }}
+                                className="w-full h-2 rounded-lg appearance-none cursor-pointer  accent-blue-600"
                             />
                         </div>
 
                         {book.pages && (
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <label className="block text-md font-medium text-gray-700 mb-2">
                                     Current Page
                                 </label>
                                 <input
@@ -140,13 +140,13 @@ const BookDetailModal = ({ book, onClose, onUpdate }) => {
 
                     {/* Rating Section */}
                     <div className="mb-6">
-                        <h4 className="font-serif text-lg font-semibold mb-3">Rating</h4>
+                        <h4 className="font-serif text-xl font-semibold mb-3">Rating</h4>
                         <StarRating rating={rating} onRatingChange={setRating} size="lg" />
                     </div>
 
                     {/* Review Section */}
                     <div className="mb-6">
-                        <h4 className="font-serif text-lg font-semibold mb-3">Review</h4>
+                        <h4 className="font-serif text-xl font-semibold mb-3">Review</h4>
                         <textarea
                             value={review}
                             onChange={(e) => setReview(e.target.value)}
