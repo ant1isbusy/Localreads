@@ -35,7 +35,8 @@ const BookDetailModal = ({ book, onClose, onUpdate }) => {
     };
 
     const handlePageChange = (e) => {
-        const page = parseInt(e.target.value) || 0;
+        const value = e.target.value;
+        const page = value === '' ? 0 : parseInt(value);
         setCurrentPage(page);
         if (book.pages) {
             setProgress(Math.min(page / book.pages, 1));
@@ -130,6 +131,7 @@ const BookDetailModal = ({ book, onClose, onUpdate }) => {
                                     max={book.pages}
                                     value={currentPage}
                                     onChange={handlePageChange}
+                                    onFocus={(e) => e.target.select()}
                                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                 />
                             </div>

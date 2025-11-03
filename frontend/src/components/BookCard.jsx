@@ -30,7 +30,7 @@ const BookCard = ({ book, onClick }) => {
 
                 {/* Book Info */}
                 <div className="flex-1 min-w-0">
-                    <h3 className="font-serif text-lg font-bold text-gray-900 truncate mb-1">
+                    <h3 className="font-sans text-lg font-bold text-gray-900 truncate mb-1">
                         {book.title}
                     </h3>
                     <p className="text-sm text-gray-600 mb-2">{book.author}</p>
