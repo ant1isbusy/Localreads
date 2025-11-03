@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import BookList from './components/BookList';
 import RTYPanel from './components/RTYPanel';
+import Sidebar from './components/Sidebar';
 import './App.css';
 import { API_BASE_URL } from './config';
 
@@ -9,6 +10,7 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [scanning, setScanning] = useState(false);
   const [scanResult, setScanResult] = useState(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     fetchBooks();
@@ -113,20 +115,36 @@ function App() {
           <div className="flex items-center gap-3">
             <h1 className="text-4xl font-serif tracking-tight">Localreads</h1>
           </div>
-          <button
-            onClick={scanLibrary}
-            disabled={scanning}
-            className="px-3 py-1 bg-gray-200 border-2 border-gray-300 font-sans text-sm rounded-full text-black hover:bg-gray-800 hover:text-white transition disabled:opacity-50"
-          >
-            {scanning ? 'Scanning... ' : 'Scan Library'}
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={scanLibrary}
+              disabled={scanning}
+              className="px-3 py-1 bg-gray-200 border-2 border-gray-300 font-sans text-sm rounded-full text-black hover:bg-gray-800 hover:text-white transition disabled:opacity-50"
+            >
+              {scanning ? 'Scanning... ' : 'Scan Library'}
+            </button>
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              aria-label="Open menu"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+          </div>
         </div>
       </header>
 
+      {/* Sidebar */}
+      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+
       {/* Main Content */}
       <main className="flex-1 w-full">
-        <RTYPanel>
-        </RTYPanel>
+        <RTYPanel
+          onUpdateProgress={updateBookProgress}
+          onUpdateRatingReview={updateBookRatingReview}
+        />
         <BookList
           books={books}
           onUpdateProgress={updateBookProgress}
@@ -136,20 +154,18 @@ function App() {
         {scanResult && (
           <div
             className={`
-      fixed bottom-6 right-6 z-50 px-6 py-4 rounded-xl shadow-lg
-      transition-opacity duration-500
-      ${scanResult ? 'opacity-100' : 'opacity-0'}
-      ${scanResult.status === 'success'
+              fixed bottom-6 right-6 z-50 px-6 py-4 rounded-xl shadow-lg
+              transition-opacity duration-500
+              ${scanResult ? 'opacity-100' : 'opacity-0'}
+              ${scanResult.status === 'success'
                 ? 'bg-green-100 text-green-800'
                 : 'bg-red-100 text-red-800'}
-    `}
+            `}
           >
             {scanResult.message}
           </div>
         )}
       </main>
-
-
     </div>
   );
 }

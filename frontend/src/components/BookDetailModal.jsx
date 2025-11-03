@@ -139,7 +139,7 @@ const BookDetailModal = ({ book, onClose, onUpdate }) => {
                     {/* Rating Section */}
                     <div className="mb-6">
                         <h4 className="font-serif text-lg font-semibold mb-3">Rating</h4>
-                        <StarRating rating={rating} onRatingChange={setRating} size="medium" />
+                        <StarRating rating={rating} onRatingChange={setRating} size="lg" />
                     </div>
 
                     {/* Review Section */}
