@@ -1,0 +1,17 @@
+{
+    "name": "Localreads",
+    "short_name": "Localreads",
+    "description": "Your personal reading library",
+    "icons": [
+        {
+            "src": "/icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ],
+    "start_url": "/",
+    "display": "standalone",
+    "theme_color": "#ffffff",
+    "background_color": "#ffffff",
+    "orientation": "portrait"
+}
