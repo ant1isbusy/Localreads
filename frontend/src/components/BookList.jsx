@@ -37,11 +37,8 @@ const BookList = ({ books, onUpdateProgress, onUpdateRatingReview, loading }) =>
             <div className="mb-5">
                 <div className="flex items-center justify-between mb-3 px-2">
                     <h2 className="font-serif text-[22px] font-bold">
-                        {title}
+                        {title} ({books.length})
                     </h2>
-                    <span className="font-serif text-[22px] font-bold text-black">
-                        {books.length}
-                    </span>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2">
                     {books.map(book => (
@@ -106,8 +103,8 @@ const BookList = ({ books, onUpdateProgress, onUpdateRatingReview, loading }) =>
                     <button
                         onClick={() => setViewMode('list')}
                         className={`relative z-10 px-3 py-1.5 rounded-full text-sm font-medium transition-colors duration-300 ${viewMode === 'list'
-                                ? 'text-gray-900'
-                                : 'text-gray-500 hover:text-gray-700'
+                            ? 'text-gray-900'
+                            : 'text-gray-500 hover:text-gray-700'
                             }`}
                     >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -117,8 +114,8 @@ const BookList = ({ books, onUpdateProgress, onUpdateRatingReview, loading }) =>
                     <button
                         onClick={() => setViewMode('grid')}
                         className={`relative z-10 px-3 py-1.5 rounded-full text-sm font-medium transition-colors duration-300 ${viewMode === 'grid'
-                                ? 'text-gray-900'
-                                : 'text-gray-500 hover:text-gray-700'
+                            ? 'text-gray-900'
+                            : 'text-gray-500 hover:text-gray-700'
                             }`}
                     >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
