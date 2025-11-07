@@ -39,14 +39,19 @@ const RTYPanel = ({ onUpdateProgress, onUpdateRatingReview }) => {
     };
 
     const handleUpdate = async (bookId, updates) => {
-        if (updates.progress !== undefined || updates.current_page !== undefined) {
-            await onUpdateProgress(bookId, updates.progress, updates.current_page);
+        try {
+            if (updates.progress !== undefined || updates.current_page !== undefined) {
+                await onUpdateProgress(bookId, updates.progress, updates.current_page);
+            }
+            if (updates.rating_stars !== undefined || updates.review !== undefined) {
+                await onUpdateRatingReview(bookId, updates.rating_stars, updates.review);
+            }
+            // Refresh the list after update
+            await fetchBooksReadThisYear();
+        } catch (error) {
+            console.error('Error updating book:', error);
+            throw error; // Re-throw to let BookDetailModal handle it
         }
-        if (updates.rating_stars !== undefined || updates.review !== undefined) {
-            await onUpdateRatingReview(bookId, updates.rating_stars, updates.review);
-        }
-        // Refresh the list after update
-        fetchBooksReadThisYear();
     };
 
     if (loading) {

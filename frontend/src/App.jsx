@@ -38,18 +38,38 @@ function App() {
     }
   };
 
-  const updateBookProgress = async (bookId, progress) => {
+  const removeBookFromLibrary = async (bookID) => {
+
+  };
+
+  const addBookToCollection = async (bookID, collectionID) => {
+
+  };
+
+  const updateBookProgress = async (bookId, progress, current_page = undefined) => {
     try {
+      const body = { progress };
+      if (current_page !== undefined) body.current_page = current_page;
+
+      if (progress >= 1) {
+        body.status = 'finished';
+      } else if (progress > 0) {
+        body.status = 'reading';
+      } else {
+        body.status = 'unread';
+      }
+
       const response = await fetch(`${API_BASE_URL}/books/${bookId}/progress`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ progress }),
+        body: JSON.stringify(body),
       });
+
       if (response.ok) {
         const updatedBook = await response.json();
         setBooks(prevBooks =>
           prevBooks.map(book =>
-            book.id === bookId ? { ...book, progress: updatedBook.progress } : book
+            book.id === bookId ? { ...book, ...updatedBook } : book
           )
         );
       } else {

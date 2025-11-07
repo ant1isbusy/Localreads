@@ -23,11 +23,16 @@ const BookList = ({ books, onUpdateProgress, onUpdateRatingReview, loading }) =>
     const finishedBooks = sortedBooks.filter(book => book.progress === 1);
 
     const handleUpdate = async (bookId, updates) => {
-        if (updates.progress !== undefined || updates.current_page !== undefined) {
-            await onUpdateProgress(bookId, updates.progress, updates.current_page);
-        }
-        if (updates.rating_stars !== undefined || updates.review !== undefined) {
-            await onUpdateRatingReview(bookId, updates.rating_stars, updates.review);
+        try {
+            if (updates.progress !== undefined || updates.current_page !== undefined) {
+                await onUpdateProgress(bookId, updates.progress, updates.current_page);
+            }
+            if (updates.rating_stars !== undefined || updates.review !== undefined) {
+                await onUpdateRatingReview(bookId, updates.rating_stars, updates.review);
+            }
+        } catch (error) {
+            console.error('Error updating book:', error);
+            throw error; // Re-throw to let BookDetailModal handle it
         }
     };
 

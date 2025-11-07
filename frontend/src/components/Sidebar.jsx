@@ -51,8 +51,8 @@ const Sidebar = ({ isOpen, onClose }) => {
                             href="#"
                             className="block px-4 py-3 rounded-lg hover:bg-gray-100 transition-colors"
                         >
-                            <div className="font-medium">Settings</div>
-                            <div className="text-sm text-gray-500">App preferences</div>
+                            <div className="font-medium">Collections</div>
+                            <div className="text-sm text-gray-500">Your book collections</div>
                         </a>
                     </nav>
                 </div>
