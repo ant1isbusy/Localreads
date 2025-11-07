@@ -1,5 +1,5 @@
 from sqlmodel import Session, select
-from .models import Book, BookStatus
+from .models import Book, BookStatus, BookVisibility
 from typing import List, Optional
 from .scanners import EPUBScanner, PDFScanner
 from datetime import datetime
@@ -24,9 +24,18 @@ def get_books(session: Session, sort_by: str = "title"):
     books = session.exec(statement).all()
     return books
 
-
 def get_book_by_id(session: Session, book_id: int) -> Optional[Book]:
     return session.get(Book, book_id)
+
+def hide_book(session: Session, book_id: int):
+    book = session.get(Book, book_id)
+    if book:
+        book.visibility = BookVisibility.HIDDEN
+        session.add(book)
+        session.commit()
+        session.refresh(book)
+        return book
+    return None
 
 
 def update_book_progress(session: Session, book_id: int, progress: float):

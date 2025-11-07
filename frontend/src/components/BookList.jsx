@@ -4,11 +4,13 @@ import BookDetailModal from './BookDetailModal';
 import { API_BASE_URL } from '../config';
 import '../App.css';
 
-const BookList = ({ books, onUpdateProgress, onUpdateRatingReview, loading }) => {
+const BookList = ({ books, onUpdateProgress, onUpdateRatingReview, onRemoveBook, loading }) => {
     const [selectedBook, setSelectedBook] = useState(null);
     const [viewMode, setViewMode] = useState('list'); // 'list' or 'grid'
 
-    const sortedBooks = [...books].sort((a, b) => {
+    const visibleBooks = books.filter(book => book.visibility !== 'hidden');
+
+    const sortedBooks = [...visibleBooks].sort((a, b) => {
         if (a.progress > 0 && a.progress < 1 && !(b.progress > 0 && b.progress < 1)) return -1;
         if (b.progress > 0 && b.progress < 1 && !(a.progress > 0 && a.progress < 1)) return 1;
         if (a.progress === 0 && b.progress !== 0) return -1;
@@ -36,6 +38,10 @@ const BookList = ({ books, onUpdateProgress, onUpdateRatingReview, loading }) =>
         }
     };
 
+    const handleRemove = async (book) => {
+        await onRemoveBook(book.id);
+    };
+
     const renderBookSection = (books, title) => {
         if (books.length === 0) return null;
         return (
@@ -51,6 +57,7 @@ const BookList = ({ books, onUpdateProgress, onUpdateRatingReview, loading }) =>
                             key={book.id}
                             book={book}
                             onClick={setSelectedBook}
+                            onRemove={handleRemove}
                         />
                     ))}
                 </div>

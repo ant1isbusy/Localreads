@@ -10,6 +10,7 @@ from .crud import (
     update_book_progress,
     scan_books_directory,
     update_book_rating_and_review,
+    hide_book,
 )
 
 app = FastAPI(title="Localreads")
@@ -99,3 +100,10 @@ def scan_books(
 @app.get("/health")
 def health_check():
     return {"status": "healthy", "service": "Localreads"}
+
+
+@app.patch("/hide/{book_id}")
+def remove_book(book_id: int, session: Session = Depends(get_session)):
+    result = hide_book(session, book_id)
+    return result
+

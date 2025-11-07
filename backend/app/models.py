@@ -9,6 +9,9 @@ class BookStatus(str, Enum):
     READING = "reading"
     FINISHED = "finished"
 
+class BookVisibility(str, Enum):
+    HIDDEN = "hidden",
+    VISIBLE = "visible"
 
 class Book(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -24,5 +27,6 @@ class Book(SQLModel, table=True):
     rating_stars: int = 0
     review: Optional[str] = None
     status: BookStatus = BookStatus.UNREAD
+    visibility: BookVisibility = BookVisibility.VISIBLE
     last_updated: datetime = Field(default_factory=datetime.now)
     created_at: datetime = Field(default_factory=datetime.now)

@@ -38,8 +38,17 @@ function App() {
     }
   };
 
-  const removeBookFromLibrary = async (bookID) => {
-
+  const removeBookFromLibrary = async (bookId) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/hide/${bookId}`, {
+        method: 'PATCH',
+      });
+      if (response.ok) {
+        fetchBooks()
+      }
+    } catch (error) {
+      console.error('Error removing book:', error);
+    }
   };
 
   const addBookToCollection = async (bookID, collectionID) => {
@@ -169,6 +178,7 @@ function App() {
           books={books}
           onUpdateProgress={updateBookProgress}
           onUpdateRatingReview={updateBookRatingReview}
+          onRemoveBook={removeBookFromLibrary}
           loading={loading}
         />
         {scanResult && (
