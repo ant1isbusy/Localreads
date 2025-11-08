@@ -107,3 +107,4 @@ def remove_book(book_id: int, session: Session = Depends(get_session)):
     result = hide_book(session, book_id)
     return result
 
+# TODO handle all the new requests @app.post("/collections")

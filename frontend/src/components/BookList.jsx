@@ -42,6 +42,10 @@ const BookList = ({ books, onUpdateProgress, onUpdateRatingReview, onRemoveBook,
         await onRemoveBook(book.id);
     };
 
+    const handleAddToCollection = (book) => {
+        onAddToCollection(book);
+    };
+
     const renderBookSection = (books, title) => {
         if (books.length === 0) return null;
         return (

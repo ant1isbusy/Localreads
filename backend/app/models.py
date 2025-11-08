@@ -1,8 +1,7 @@
-from sqlmodel import SQLModel, Field
-from typing import Optional
+from sqlmodel import SQLModel, Field, Relationship
+from typing import Optional, List
 from datetime import datetime
 from enum import Enum
-
 
 class BookStatus(str, Enum):
     UNREAD = "unread"
@@ -10,8 +9,14 @@ class BookStatus(str, Enum):
     FINISHED = "finished"
 
 class BookVisibility(str, Enum):
-    HIDDEN = "hidden",
+    HIDDEN = "hidden"
     VISIBLE = "visible"
+
+# Junction/Link table - Must be defined FIRST
+class BookCollection(SQLModel, table=True):
+    book_id: Optional[int] = Field(default=None, foreign_key="book.id", primary_key=True)
+    collection_id: Optional[int] = Field(default=None, foreign_key="collection.id", primary_key=True)
+    added_at: datetime = Field(default_factory=datetime.now)
 
 class Book(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -30,3 +35,22 @@ class Book(SQLModel, table=True):
     visibility: BookVisibility = BookVisibility.VISIBLE
     last_updated: datetime = Field(default_factory=datetime.now)
     created_at: datetime = Field(default_factory=datetime.now)
+    
+    # Relationship to collections (pass class, not string)
+    collections: List["Collection"] = Relationship(
+        back_populates="books",
+        link_model=BookCollection
+    )
+
+class Collection(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    name: str = Field(unique=True, index=True)
+    description: Optional[str] = None
+    color: str = "#3B82F6"
+    created_at: datetime = Field(default_factory=datetime.now)
+    
+    # Relationship to books (pass class, not string)
+    books: List[Book] = Relationship(
+        back_populates="collections",
+        link_model=BookCollection
+    )
