@@ -16,12 +16,10 @@ def create_book(session: Session, book_data: dict) -> Book:
 def get_collections_db(session: Session):
     statement = select(Collection)
     collections = session.exec(statement).all()
-    print(collections)
     return collections
 
 def create_collection_db(session: Session, collection_data: dict) -> dict:
     try:
-        print(collection_data)
         db_collection = Collection(**collection_data)
         session.add(db_collection)
         session.commit()
@@ -29,7 +27,7 @@ def create_collection_db(session: Session, collection_data: dict) -> dict:
         return db_collection
     except Exception as e:
         session.rollback()
-        print(f"Error creating DB: {str(e)}")
+        print(f"Error creating collection: {str(e)}")
         raise
 
 def delete_collection_db(session: Session, collection_id: int) -> bool:
@@ -69,6 +67,8 @@ def add_book_to_collection_db(session: Session, book_id: int, collection_id: int
         session.add(book_collection)
         session.commit()
         session.refresh(book_collection)
+        
+        print(f"Added book {book_id} to collection {collection_id}")
         return book_collection
     except Exception as e:
         session.rollback()
@@ -95,32 +95,39 @@ def remove_book_from_collection_db(session: Session, book_id: int, collection_id
 
 def get_collection_with_books_db(session: Session, collection_id: int):
     try:
-        collection = session.get(Collection, collection_id)
-        if not collection:
-            return None
         
-        return collection
+        # TODO fix
     except Exception as e:
         print(f"Error getting collection with books: {str(e)}")
         raise
 
 def get_books(session: Session, sort_by: str = "title"):
-
     statement = select(Book)
     if sort_by == "title":
         statement = statement.order_by(Book.title)
     elif sort_by == "progress":
         statement = statement.order_by(Book.progress.desc())
+    
     books = session.exec(statement).all()
+    
+    for book in books:
+        _ = book.collections  # This triggers lazy loading
+    
     return books
 
 def get_book_by_id(session: Session, book_id: int) -> Optional[Book]:
-    return session.get(Book, book_id)
-
-def hide_book(session: Session, book_id: int):
     book = session.get(Book, book_id)
     if book:
-        book.visibility = BookVisibility.HIDDEN
+        _ = book.collections  # Load collections
+    return book
+
+def change_visibility(session: Session, book_id: int):
+    book = session.get(Book, book_id)
+    if book:
+        vis = BookVisibility.HIDDEN
+        if book.visibility == BookVisibility.HIDDEN:
+            vis = BookVisibility.VISIBLE
+        book.visibility = vis
         session.add(book)
         session.commit()
         session.refresh(book)
@@ -237,7 +244,7 @@ def process_epub_file(file_path: str) -> Optional[dict]:
 
 
 def process_pdf_file(file_path: str) -> Optional[dict]:
-    """Process a single EPUB file and return book data"""
+    """Process a single PDF file and return book data"""
     try:
         metadata = PDFScanner.extract_metadata(file_path)
 
@@ -254,5 +261,5 @@ def process_pdf_file(file_path: str) -> Optional[dict]:
             "status": BookStatus.UNREAD,
         }
     except Exception as e:
-        print(f"Error processing EPUB {file_path}: {e}")
+        print(f"Error processing PDF {file_path}: {e}")
         return None

@@ -4,7 +4,7 @@ import BookDetailModal from './BookDetailModal';
 import { API_BASE_URL } from '../config';
 import '../App.css';
 
-const BookList = ({ books, onUpdateProgress, onUpdateRatingReview, onRemoveBook, loading }) => {
+const BookList = ({ books, onUpdateProgress, onUpdateRatingReview, onRemoveBook, onAddToCollection, loading }) => {
     const [selectedBook, setSelectedBook] = useState(null);
     const [viewMode, setViewMode] = useState('list'); // 'list' or 'grid'
 
@@ -40,10 +40,6 @@ const BookList = ({ books, onUpdateProgress, onUpdateRatingReview, onRemoveBook,
         await onRemoveBook(book.id);
     };
 
-    const handleAddToCollection = (book) => {
-        onAddToCollection(book);
-    };
-
     const renderBookSection = (books, title) => {
         if (books.length === 0) return null;
         return (
@@ -59,6 +55,7 @@ const BookList = ({ books, onUpdateProgress, onUpdateRatingReview, onRemoveBook,
                             key={book.id}
                             book={book}
                             onClick={setSelectedBook}
+                            onAddToCollection={onAddToCollection}
                             onRemove={handleRemove}
                         />
                     ))}

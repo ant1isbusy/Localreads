@@ -10,7 +10,7 @@ from .crud import (
     update_book_progress,
     scan_books_directory,
     update_book_rating_and_review,
-    hide_book,
+    change_visibility,
     get_collections_db,
     create_collection_db,
     delete_collection_db,
@@ -108,9 +108,9 @@ def health_check():
     return {"status": "healthy", "service": "Localreads"}
 
 
-@app.patch("/books/{book_id}/hide")
+@app.patch("/books/{book_id}/visibility")
 def remove_book(book_id: int, session: Session = Depends(get_session)):
-    result = hide_book(session, book_id)
+    result = change_visibility(session, book_id)
     return result
 
 

@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 
-const CollectionPicker = ({ book, collections, onClose, onAddToCollection, onRemoveFromCollection }) => {
+const CollectionPicker = ({ book, collections, onClose, onAddToCollection, onRemoveFromCollection, onCreateCollection }) => {
     const [selectedCollections, setSelectedCollections] = useState(
         new Set(book.collections?.map(c => c.id) || [])
     );
     const [newCollectionName, setNewCollectionName] = useState('');
+    const [newCollectionDescription, setNewCollectionDescription] = useState('');
     const [isCreating, setIsCreating] = useState(false);
 
     const handleToggle = (collectionId) => {
@@ -39,8 +40,9 @@ const CollectionPicker = ({ book, collections, onClose, onAddToCollection, onRem
 
     const handleCreateCollection = async () => {
         if (newCollectionName.trim()) {
-            // This would need to be implemented - create collection and add book
+            await onCreateCollection(newCollectionName.trim(), newCollectionDescription.trim());
             setNewCollectionName('');
+            setNewCollectionDescription('');
             setIsCreating(false);
         }
     };
@@ -111,6 +113,13 @@ const CollectionPicker = ({ book, collections, onClose, onAddToCollection, onRem
                                     autoFocus
                                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                 />
+                                <textarea
+                                    value={newCollectionDescription}
+                                    onChange={(e) => setNewCollectionDescription(e.target.value)}
+                                    placeholder="Description (optional)"
+                                    rows={2}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                                />
                                 <div className="flex gap-2">
                                     <button
                                         onClick={handleCreateCollection}
@@ -122,6 +131,7 @@ const CollectionPicker = ({ book, collections, onClose, onAddToCollection, onRem
                                         onClick={() => {
                                             setIsCreating(false);
                                             setNewCollectionName('');
+                                            setNewCollectionDescription('');
                                         }}
                                         className="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
                                     >

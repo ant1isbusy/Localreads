@@ -132,7 +132,7 @@ function App() {
 
     const removeBookFromLibrary = async (bookId) => {
         try {
-            const response = await fetch(`${API_BASE_URL}/books/${bookId}/hide`, {
+            const response = await fetch(`${API_BASE_URL}/books/${bookId}/visibility`, {
                 method: 'PATCH',
             });
             if (response.ok) {
@@ -308,6 +308,7 @@ function App() {
                     onClose={() => setCollectionPickerBook(null)}
                     onAddToCollection={addBookToCollection}
                     onRemoveFromCollection={removeBookFromCollection}
+                    onCreateCollection={createCollection}
                 />
             )}
 

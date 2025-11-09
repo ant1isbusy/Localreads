@@ -1,9 +1,8 @@
-import React from 'react';
 import CollectionList from './CollectionList';
 
-const Sidebar = ({ 
-    isOpen, 
-    onClose, 
+const Sidebar = ({
+    isOpen,
+    onClose,
     collections,
     onSelectCollection,
     onCreateCollection,
@@ -23,9 +22,8 @@ const Sidebar = ({
 
             {/* Sidebar */}
             <div
-                className={`fixed top-0 right-0 h-full w-80 bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-in-out ${
-                    isOpen ? 'translate-x-0' : 'translate-x-full'
-                }`}
+                className={`fixed top-0 right-0 h-full w-80 bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : 'translate-x-full'
+                    }`}
             >
                 {/* Header */}
                 <div className="flex items-center justify-between p-6 border-b border-gray-200">
@@ -49,18 +47,16 @@ const Sidebar = ({
                                 onViewChange('library');
                                 onClose();
                             }}
-                            className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
-                                view === 'library' ? 'bg-blue-100 text-blue-900' : 'hover:bg-gray-100'
-                            }`}
+                            className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${view === 'library' ? 'bg-blue-100 text-blue-900' : 'hover:bg-gray-100'
+                                }`}
                         >
                             <div className="font-medium">Library</div>
                             <div className="text-sm text-gray-500">View all books</div>
                         </button>
                         <button
                             onClick={() => onViewChange('collections')}
-                            className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
-                                view === 'collections' ? 'bg-blue-100 text-blue-900' : 'hover:bg-gray-100'
-                            }`}
+                            className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${view === 'collections' ? 'bg-blue-100 text-blue-900' : 'hover:bg-gray-100'
+                                }`}
                         >
                             <div className="font-medium">Collections</div>
                             <div className="text-sm text-gray-500">Organize books</div>
