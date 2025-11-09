@@ -11,6 +11,8 @@ from .crud import (
     scan_books_directory,
     update_book_rating_and_review,
     hide_book,
+    get_collections_db,
+    create_collection_db
 )
 
 app = FastAPI(title="Localreads")
@@ -107,4 +109,24 @@ def remove_book(book_id: int, session: Session = Depends(get_session)):
     result = hide_book(session, book_id)
     return result
 
-# TODO handle all the new requests @app.post("/collections")
+
+class CollectionData(BaseModel):
+    name: str
+    description: str
+
+
+@app.post("/collections/")
+async def create_collection(
+    collection: CollectionData,
+    session: Session = Depends(get_session)
+):
+    try:
+        collection_dict = collection.model_dump(exclude_unset=True)
+        new_collection = create_collection_db(session, collection_dict)
+        return new_collection
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@app.get("/collections/")
+def get_collections(session: Session = Depends(get_session)):
+    return get_collections_db(session)

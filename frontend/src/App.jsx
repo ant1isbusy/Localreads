@@ -212,7 +212,6 @@ function App() {
         }
     };
 
-    // Filter books based on selected collection
     const getFilteredBooks = () => {
         if (selectedCollection === 'hidden') {
             return books.filter(book => book.visibility === 'hidden');
@@ -220,7 +219,7 @@ function App() {
         if (selectedCollection === null) {
             return books.filter(book => book.visibility !== 'hidden');
         }
-        // Filter by collection ID
+
         return books.filter(book =>
             book.collections?.some(c => c.id === selectedCollection) &&
             book.visibility !== 'hidden'

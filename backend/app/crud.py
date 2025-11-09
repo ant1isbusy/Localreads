@@ -1,5 +1,5 @@
 from sqlmodel import Session, select
-from .models import Book, BookStatus, BookVisibility
+from .models import Book, BookStatus, BookVisibility, Collection
 from typing import List, Optional
 from .scanners import EPUBScanner, PDFScanner
 from datetime import datetime
@@ -12,6 +12,25 @@ def create_book(session: Session, book_data: dict) -> Book:
     session.commit()
     session.refresh(db_book)
     return db_book
+
+def get_collections_db(session: Session):
+    statement = select(Collection)
+    collections = session.exec(statement).all()
+    print(collections)
+    return collections
+
+def create_collection_db(session: Session, collection_data: dict) -> dict:
+    try:
+        print(collection_data)
+        db_collection = Collection(**collection_data)
+        session.add(db_collection)
+        session.commit()
+        session.refresh(db_collection)
+        return db_collection
+    except Exception as e:
+        session.rollback()
+        print(f"Error creating DB: {str(e)}")
+        raise
 
 
 def get_books(session: Session, sort_by: str = "title"):
