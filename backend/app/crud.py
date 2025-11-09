@@ -1,5 +1,5 @@
 from sqlmodel import Session, select
-from .models import Book, BookStatus, BookVisibility, Collection
+from .models import Book, BookStatus, BookVisibility, Collection, BookCollection
 from typing import List, Optional
 from .scanners import EPUBScanner, PDFScanner
 from datetime import datetime
@@ -32,6 +32,77 @@ def create_collection_db(session: Session, collection_data: dict) -> dict:
         print(f"Error creating DB: {str(e)}")
         raise
 
+def delete_collection_db(session: Session, collection_id: int) -> bool:
+    try:
+        collection = session.get(Collection, collection_id)
+        if collection:
+            session.delete(collection)
+            session.commit()
+            return True
+        return False
+    except Exception as e:
+        session.rollback()
+        print(f"Error deleting collection: {str(e)}")
+        raise
+
+def add_book_to_collection_db(session: Session, book_id: int, collection_id: int) -> BookCollection:
+    try:
+        book = session.get(Book, book_id)
+        collection = session.get(Collection, collection_id)
+        
+        if not book or not collection:
+            raise ValueError("Book or Collection not found")
+        
+        existing = session.exec(
+            select(BookCollection)
+            .where(BookCollection.book_id == book_id)
+            .where(BookCollection.collection_id == collection_id)
+        ).first()
+        
+        if existing:
+            return existing
+        
+        book_collection = BookCollection(
+            book_id=book_id,
+            collection_id=collection_id
+        )
+        session.add(book_collection)
+        session.commit()
+        session.refresh(book_collection)
+        return book_collection
+    except Exception as e:
+        session.rollback()
+        print(f"Error adding book to collection: {str(e)}")
+        raise
+
+def remove_book_from_collection_db(session: Session, book_id: int, collection_id: int) -> bool:
+    try:
+        book_collection = session.exec(
+            select(BookCollection)
+            .where(BookCollection.book_id == book_id)
+            .where(BookCollection.collection_id == collection_id)
+        ).first()
+        
+        if book_collection:
+            session.delete(book_collection)
+            session.commit()
+            return True
+        return False
+    except Exception as e:
+        session.rollback()
+        print(f"Error removing book from collection: {str(e)}")
+        raise
+
+def get_collection_with_books_db(session: Session, collection_id: int):
+    try:
+        collection = session.get(Collection, collection_id)
+        if not collection:
+            return None
+        
+        return collection
+    except Exception as e:
+        print(f"Error getting collection with books: {str(e)}")
+        raise
 
 def get_books(session: Session, sort_by: str = "title"):
 
@@ -137,7 +208,7 @@ def scan_books_directory(session: Session, books_path: str = "./books") -> dict:
 
     return {
         "status": "success",
-        "message": f"Scanning completed",
+        "message": "Scanning completed",
         "scanned_files": scanned_files,
         "new_books": new_books,
         "errors": errors,

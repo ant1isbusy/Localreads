@@ -12,7 +12,11 @@ from .crud import (
     update_book_rating_and_review,
     hide_book,
     get_collections_db,
-    create_collection_db
+    create_collection_db,
+    delete_collection_db,
+    add_book_to_collection_db,
+    remove_book_from_collection_db,
+    get_collection_with_books_db
 )
 
 app = FastAPI(title="Localreads")
@@ -104,7 +108,7 @@ def health_check():
     return {"status": "healthy", "service": "Localreads"}
 
 
-@app.patch("/hide/{book_id}")
+@app.patch("/books/{book_id}/hide")
 def remove_book(book_id: int, session: Session = Depends(get_session)):
     result = hide_book(session, book_id)
     return result
@@ -127,6 +131,59 @@ async def create_collection(
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
+
 @app.get("/collections/")
 def get_collections(session: Session = Depends(get_session)):
     return get_collections_db(session)
+
+
+@app.get("/collections/{collection_id}")
+def get_collection(collection_id: int, session: Session = Depends(get_session)):
+    collection = get_collection_with_books_db(session, collection_id)
+    if not collection:
+        raise HTTPException(status_code=404, detail="Collection not found")
+    return collection
+
+
+@app.delete("/collections/{collection_id}")
+def delete_collection(collection_id: int, session: Session = Depends(get_session)):
+    try:
+        success = delete_collection_db(session, collection_id)
+        if success:
+            return {"message": "Collection deleted successfully"}
+        raise HTTPException(status_code=404, detail="Collection not found")
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+class AddBookToCollectionData(BaseModel):
+    book_id: int
+
+
+@app.post("/collections/{collection_id}/books")
+def add_book_to_collection(
+    collection_id: int,
+    data: AddBookToCollectionData,
+    session: Session = Depends(get_session)
+):
+    try:
+        add_book_to_collection_db(session, data.book_id, collection_id)
+        return {"message": "Book added to collection successfully"}
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@app.delete("/collections/{collection_id}/books/{book_id}")
+def remove_book_from_collection(
+    collection_id: int,
+    book_id: int,
+    session: Session = Depends(get_session)
+):
+    try:
+        success = remove_book_from_collection_db(session, book_id, collection_id)
+        if success:
+            return {"message": "Book removed from collection successfully"}
+        raise HTTPException(status_code=404, detail="Book not in collection")
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))

@@ -3,6 +3,7 @@ import BookList from './components/BookList';
 import RTYPanel from './components/RTYPanel';
 import Sidebar from './components/Sidebar';
 import CollectionPicker from './components/CollectionPicker';
+import ConfirmDialog from './components/ConfirmDialog';
 import './App.css';
 import { API_BASE_URL } from './config';
 
@@ -16,6 +17,7 @@ function App() {
     const [sidebarView, setSidebarView] = useState('library');
     const [selectedCollection, setSelectedCollection] = useState(null);
     const [collectionPickerBook, setCollectionPickerBook] = useState(null);
+    const [confirmDialog, setConfirmDialog] = useState({ isOpen: false, collectionId: null });
 
     useEffect(() => {
         fetchBooks();
@@ -72,9 +74,13 @@ function App() {
     };
 
     const deleteCollection = async (collectionId) => {
-        if (!window.confirm('Delete this collection? Books will not be deleted.')) {
-            return;
-        }
+        setConfirmDialog({ isOpen: true, collectionId });
+    };
+
+    const handleConfirmDelete = async () => {
+        const { collectionId } = confirmDialog;
+        setConfirmDialog({ isOpen: false, collectionId: null });
+
         try {
             const response = await fetch(`${API_BASE_URL}/collections/${collectionId}`, {
                 method: 'DELETE',
@@ -88,6 +94,10 @@ function App() {
         } catch (error) {
             console.error('Error deleting collection:', error);
         }
+    };
+
+    const handleCancelDelete = () => {
+        setConfirmDialog({ isOpen: false, collectionId: null });
     };
 
     const addBookToCollection = async (bookId, collectionId) => {
@@ -122,10 +132,8 @@ function App() {
 
     const removeBookFromLibrary = async (bookId) => {
         try {
-            const response = await fetch(`${API_BASE_URL}/books/${bookId}/visibility`, {
+            const response = await fetch(`${API_BASE_URL}/books/${bookId}/hide`, {
                 method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ visibility: 'hidden' }),
             });
             if (response.ok) {
                 await fetchBooks();
@@ -282,6 +290,15 @@ function App() {
                 onDeleteCollection={deleteCollection}
                 view={sidebarView}
                 onViewChange={setSidebarView}
+            />
+
+            {/* Confirm Dialog */}
+            <ConfirmDialog
+                isOpen={confirmDialog.isOpen}
+                title="Delete Collection"
+                message="Delete this collection? Books will not be deleted."
+                onConfirm={handleConfirmDelete}
+                onCancel={handleCancelDelete}
             />
 
             {/* Collection Picker Modal */}
