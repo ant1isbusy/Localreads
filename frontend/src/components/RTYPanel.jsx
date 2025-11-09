@@ -70,6 +70,10 @@ const RTYPanel = ({ onUpdateProgress, onUpdateRatingReview }) => {
         );
     }
 
+    if (booksReadThisYear.length === 0) {
+        return null
+    }
+
     return (
         <>
             <div className="w-full max-w-6xl mx-auto px-4 py-2">
