@@ -227,7 +227,6 @@ function App() {
         if (selectedCollection === null) {
             return books.filter(book => book.visibility !== 'hidden');
         }
-
         return books.filter(book =>
             book.collections?.some(c => c.id === selectedCollection) &&
             book.visibility !== 'hidden'
@@ -239,7 +238,7 @@ function App() {
             return 'Hidden Books';
         }
         if (selectedCollection === null) {
-            return null; // Show default view
+            return null;
         }
         const collection = collections.find(c => c.id === selectedCollection);
         return collection ? collection.name : 'Collection';

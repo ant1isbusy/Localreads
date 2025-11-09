@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { API_BASE_URL } from '../config';
 
 const CollectionList = ({ collections, onSelectCollection, onCreateCollection, onDeleteCollection }) => {
     const [isCreating, setIsCreating] = useState(false);
@@ -69,7 +68,7 @@ const CollectionList = ({ collections, onSelectCollection, onCreateCollection, o
                         </div>
                     </button>
 
-                    {/* Hidden Books */}
+                    {/* Hidden Books - Special built-in view */}
                     <button
                         onClick={() => onSelectCollection('hidden')}
                         className="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-100 transition-colors"
@@ -103,16 +102,13 @@ const CollectionList = ({ collections, onSelectCollection, onCreateCollection, o
                                         className="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-100 transition-colors"
                                     >
                                         <div className="flex items-center justify-between">
-                                            <div className="flex-1 min-w-0">
+                                            <div className="flex-1 min-w-0 pr-8">
                                                 <div className="font-medium truncate">{collection.name}</div>
                                                 {collection.description && (
                                                     <div className="text-sm text-gray-500 truncate">
                                                         {collection.description}
                                                     </div>
                                                 )}
-                                                <div className="text-xs text-gray-400 mt-1">
-                                                    {collection.book_count || 0} books
-                                                </div>
                                             </div>
                                         </div>
                                     </button>

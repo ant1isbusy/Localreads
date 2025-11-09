@@ -8,9 +8,7 @@ const BookList = ({ books, onUpdateProgress, onUpdateRatingReview, onRemoveBook,
     const [selectedBook, setSelectedBook] = useState(null);
     const [viewMode, setViewMode] = useState('list'); // 'list' or 'grid'
 
-    const visibleBooks = books.filter(book => book.visibility !== 'hidden');
-
-    const sortedBooks = [...visibleBooks].sort((a, b) => {
+    const sortedBooks = [...books].sort((a, b) => {
         if (a.progress > 0 && a.progress < 1 && !(b.progress > 0 && b.progress < 1)) return -1;
         if (b.progress > 0 && b.progress < 1 && !(a.progress > 0 && a.progress < 1)) return 1;
         if (a.progress === 0 && b.progress !== 0) return -1;

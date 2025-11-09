@@ -164,7 +164,6 @@ def update_book_rating_and_review(
 
 def scan_books_directory(session: Session, books_path: str = "./books") -> dict:
     os.makedirs("covers", exist_ok=True)
-
     scanned_files = 0
     new_books = 0
     errors = 0
