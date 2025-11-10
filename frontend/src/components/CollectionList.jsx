@@ -17,13 +17,13 @@ const CollectionList = ({ collections, onSelectCollection, onCreateCollection, o
 
     return (
         <div className="flex flex-col h-full">
-            <div className="px-6 py-2 border-gray-200">
-                <h2 className="font-serif text-xl font-bold mb-4">My Collections</h2>
+            <div className="px-6 py-4 flex items-center justify-between border-b border-gray-200">
+                <h2 className="font-serif text-2xl font-bold">Collections</h2>
                 <button
                     onClick={() => setIsCreating(!isCreating)}
-                    className="w-full px-4 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                    className="px-3 py-1 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
                 >
-                    {isCreating ? 'Cancel' : '+ New Collection'}
+                    {isCreating ? 'Cancel' : '+ New'}
                 </button>
             </div>
 
@@ -63,7 +63,7 @@ const CollectionList = ({ collections, onSelectCollection, onCreateCollection, o
                             >
                                 <button
                                     onClick={() => onSelectCollection(collection.id)}
-                                    className="w-full text-left px-2 py-3 rounded-lg hover:bg-gray-100 transition-colors"
+                                    className="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-100 transition-colors"
                                 >
                                     <div className="flex items-center justify-between">
                                         <div className="flex-1 min-w-0 pr-8">

@@ -39,7 +39,7 @@ const Sidebar = ({
                     {/* Header */}
                     <div className="flex items-center justify-between p-4 border-b border-gray-200">
                         <h2 className="font-serif text-2xl font-bold">Library</h2>
-                        <button
+                        <button // X
                             onClick={onClose}
                             className="p-2 hover:bg-gray-100 rounded-full transition-colors"
                             aria-label="Close sidebar"
@@ -86,7 +86,7 @@ const Sidebar = ({
                     </div>
 
                     {/* Scan Library Button at bottom */}
-                    <div className="p-6 border-t border-gray-200">
+                    <div className="px-6 py-2 border-t border-gray-200">
                         <button
                             onClick={handleScanLibrary}
                             disabled={scanning}
