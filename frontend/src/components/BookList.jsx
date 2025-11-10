@@ -1,12 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import BookCard from './BookCard';
 import BookDetailModal from './BookDetailModal';
+import BookContextMenu from './BookContextMenu';
 import { API_BASE_URL } from '../config';
 import '../App.css';
 
 const BookList = ({ books, onUpdateProgress, onUpdateRatingReview, onRemoveBook, onAddToCollection, loading }) => {
     const [selectedBook, setSelectedBook] = useState(null);
-    const [viewMode, setViewMode] = useState('list'); // 'list' or 'grid'
+    const [viewMode, setViewMode] = useState('list');
+    const [contextMenu, setContextMenu] = useState(null);
+    const [contextMenuBook, setContextMenuBook] = useState(null);
+    const longPressTimer = useRef(null);
+    const touchStartPos = useRef(null);
+    const preventClick = useRef(false);
 
     const sortedBooks = [...books].sort((a, b) => {
         if (a.progress > 0 && a.progress < 1 && !(b.progress > 0 && b.progress < 1)) return -1;
@@ -32,12 +38,104 @@ const BookList = ({ books, onUpdateProgress, onUpdateRatingReview, onRemoveBook,
             }
         } catch (error) {
             console.error('Error updating book:', error);
-            throw error; // Re-throw to let BookDetailModal handle it
+            throw error;
         }
     };
 
     const handleRemove = async (book) => {
         await onRemoveBook(book.id);
+    };
+
+    const handleContextMenu = (e, book) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const menuWidth = 180;
+        const menuHeight = 100;
+
+        let x = e.clientX;
+        let y = e.clientY;
+
+        if (x + menuWidth > window.innerWidth) {
+            x = window.innerWidth - menuWidth - 10;
+        }
+
+        if (y + menuHeight > window.innerHeight) {
+            y = window.innerHeight - menuHeight - 10;
+        }
+
+        setContextMenuBook(book);
+        setContextMenu({ x, y });
+    };
+
+    const handleTouchStart = (e, book) => {
+        preventClick.current = false;
+        touchStartPos.current = {
+            x: e.touches[0].clientX,
+            y: e.touches[0].clientY,
+        };
+
+        longPressTimer.current = setTimeout(() => {
+            const touch = e.touches[0];
+            preventClick.current = true;
+
+            const menuWidth = 180;
+            const menuHeight = 100;
+
+            let x = touch.clientX;
+            let y = touch.clientY;
+
+            if (x + menuWidth > window.innerWidth) {
+                x = window.innerWidth - menuWidth - 10;
+            }
+
+            if (y + menuHeight > window.innerHeight) {
+                y = window.innerHeight - menuHeight - 10;
+            }
+
+            setContextMenuBook(book);
+            setContextMenu({ x, y });
+        }, 500);
+    };
+
+    const handleTouchEnd = (e) => {
+        if (longPressTimer.current) {
+            clearTimeout(longPressTimer.current);
+        }
+
+        if (contextMenu || preventClick.current) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+    };
+
+    const handleTouchMove = (e) => {
+        if (touchStartPos.current) {
+            const dx = e.touches[0].clientX - touchStartPos.current.x;
+            const dy = e.touches[0].clientY - touchStartPos.current.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+
+            if (distance > 10) {
+                if (longPressTimer.current) {
+                    clearTimeout(longPressTimer.current);
+                }
+            }
+        }
+    };
+
+    const handleGridItemClick = (book) => {
+        if (preventClick.current || contextMenu) {
+            return;
+        }
+        setSelectedBook(book);
+    };
+
+    const closeContextMenu = () => {
+        setContextMenu(null);
+        setContextMenuBook(null);
+        setTimeout(() => {
+            preventClick.current = false;
+        }, 300);
     };
 
     const renderBookSection = (books, title) => {
@@ -71,7 +169,11 @@ const BookList = ({ books, onUpdateProgress, onUpdateRatingReview, onRemoveBook,
                 {sortedBooks.map(book => (
                     <div
                         key={book.id}
-                        onClick={() => setSelectedBook(book)}
+                        onClick={() => handleGridItemClick(book)}
+                        onContextMenu={(e) => handleContextMenu(e, book)}
+                        onTouchStart={(e) => handleTouchStart(e, book)}
+                        onTouchEnd={handleTouchEnd}
+                        onTouchMove={handleTouchMove}
                         className="cursor-pointer group"
                         title={`${book.title} by ${book.author}`}
                     >
@@ -105,7 +207,6 @@ const BookList = ({ books, onUpdateProgress, onUpdateRatingReview, onRemoveBook,
             {/* View Mode Toggle */}
             <div className="flex justify-end mb-4 px-2">
                 <div className="relative inline-flex rounded-full border border-gray-300 bg-gray-100 p-1">
-                    {/* Sliding background */}
                     <div
                         className={`absolute top-1 bottom-1 left-1 right-1 w-[calc(50%-0.25rem)] bg-white rounded-full shadow-sm transition-transform duration-300 ease-in-out ${viewMode === 'grid' ? 'translate-x-full' : 'translate-x-0'
                             }`}
@@ -114,8 +215,8 @@ const BookList = ({ books, onUpdateProgress, onUpdateRatingReview, onRemoveBook,
                     <button
                         onClick={() => setViewMode('list')}
                         className={`relative z-10 px-3 py-1.5 rounded-full text-sm font-medium transition-colors duration-300 ${viewMode === 'list'
-                            ? 'text-gray-900'
-                            : 'text-gray-500 hover:text-gray-700'
+                                ? 'text-gray-900'
+                                : 'text-gray-500 hover:text-gray-700'
                             }`}
                     >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -125,8 +226,8 @@ const BookList = ({ books, onUpdateProgress, onUpdateRatingReview, onRemoveBook,
                     <button
                         onClick={() => setViewMode('grid')}
                         className={`relative z-10 px-3 py-1.5 rounded-full text-sm font-medium transition-colors duration-300 ${viewMode === 'grid'
-                            ? 'text-gray-900'
-                            : 'text-gray-500 hover:text-gray-700'
+                                ? 'text-gray-900'
+                                : 'text-gray-500 hover:text-gray-700'
                             }`}
                     >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -164,6 +265,16 @@ const BookList = ({ books, onUpdateProgress, onUpdateRatingReview, onRemoveBook,
                     book={selectedBook}
                     onClose={() => setSelectedBook(null)}
                     onUpdate={handleUpdate}
+                />
+            )}
+
+            {contextMenuBook && (
+                <BookContextMenu
+                    book={contextMenuBook}
+                    position={contextMenu}
+                    onClose={closeContextMenu}
+                    onAddToCollection={onAddToCollection}
+                    onRemove={handleRemove}
                 />
             )}
         </div>
