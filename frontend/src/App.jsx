@@ -29,7 +29,6 @@ function App() {
         fetchCollections();
     }, []);
 
-    // Fetch books when selectedCollection changes
     useEffect(() => {
         fetchBooks();
     }, [selectedCollection]);
@@ -41,7 +40,6 @@ function App() {
         }
     }, [scanResult]);
 
-    // Wrapper to save to localStorage when changing
     const setSelectedCollection = (collectionId) => {
         setSelectedCollectionState(collectionId);
         localStorage.setItem('selectedCollection', collectionId === null ? 'null' : String(collectionId));
@@ -52,7 +50,6 @@ function App() {
             setLoading(true);
             let url = `${API_BASE_URL}/books/`;
 
-            // If a collection is selected (and not 'hidden'), fetch books from that collection
             if (selectedCollection && selectedCollection !== 'hidden') {
                 url = `${API_BASE_URL}/collections/${selectedCollection}/books`;
             }
@@ -245,11 +242,9 @@ function App() {
     };
 
     const getFilteredBooks = () => {
-        // Backend now handles collection filtering, we only filter by visibility
         if (selectedCollection === 'hidden') {
             return books.filter(book => book.visibility === 'hidden');
         }
-        // For regular library and collections, filter out hidden books
         return books.filter(book => book.visibility !== 'hidden');
     };
 
@@ -280,13 +275,6 @@ function App() {
                     </div>
                     <div className="flex items-center gap-3">
                         <button
-                            onClick={scanLibrary}
-                            disabled={scanning}
-                            className="px-3 py-1 bg-gray-200 border-2 border-gray-300 font-sans text-sm rounded-full text-black hover:bg-gray-800 hover:text-white transition disabled:opacity-50"
-                        >
-                            {scanning ? 'Scanning... ' : 'Scan Library'}
-                        </button>
-                        <button
                             onClick={() => setSidebarOpen(true)}
                             className="p-2 hover:bg-gray-100 rounded-full transition-colors"
                             aria-label="Open menu"
@@ -307,6 +295,8 @@ function App() {
                 onSelectCollection={setSelectedCollection}
                 onCreateCollection={createCollection}
                 onDeleteCollection={deleteCollection}
+                onScanLibrary={scanLibrary}
+                scanning={scanning}
             />
 
             {/* Confirm Dialog */}
@@ -332,7 +322,6 @@ function App() {
 
             {/* Main Content */}
             <main className="flex-1 w-full">
-                {/* Only show RTYPanel when viewing all books (selectedCollection === null) and not hidden books */}
                 {selectedCollection === null && (
                     <RTYPanel
                         onUpdateProgress={updateBookProgress}
