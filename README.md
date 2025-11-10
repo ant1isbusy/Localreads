@@ -4,7 +4,7 @@ A local reading progress tracker for your ebook collection. Track reading progre
 
 <p align="center">
   <img src="img/image.png" alt="Image 1" width="553"/>
-  <img src="img/mobile.png" alt="Image 2" width="204"/>
+  <img src="img/mobile.jpeg" alt="Image 2" width="204"/>
 </p>
 
 ## Features
