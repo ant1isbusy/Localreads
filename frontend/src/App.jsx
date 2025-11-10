@@ -14,15 +14,25 @@ function App() {
     const [scanning, setScanning] = useState(false);
     const [scanResult, setScanResult] = useState(null);
     const [sidebarOpen, setSidebarOpen] = useState(false);
-    const [sidebarView, setSidebarView] = useState('library');
-    const [selectedCollection, setSelectedCollection] = useState(null);
+
+    const [selectedCollection, setSelectedCollectionState] = useState(() => {
+        const saved = localStorage.getItem('selectedCollection');
+        if (!saved || saved === 'null') return null;
+        if (saved === 'hidden') return 'hidden';
+        return parseInt(saved, 10);
+    });
+
     const [collectionPickerBook, setCollectionPickerBook] = useState(null);
     const [confirmDialog, setConfirmDialog] = useState({ isOpen: false, collectionId: null });
 
     useEffect(() => {
-        fetchBooks();
         fetchCollections();
     }, []);
+
+    // Fetch books when selectedCollection changes
+    useEffect(() => {
+        fetchBooks();
+    }, [selectedCollection]);
 
     useEffect(() => {
         if (scanResult) {
@@ -31,12 +41,26 @@ function App() {
         }
     }, [scanResult]);
 
+    // Wrapper to save to localStorage when changing
+    const setSelectedCollection = (collectionId) => {
+        setSelectedCollectionState(collectionId);
+        localStorage.setItem('selectedCollection', collectionId === null ? 'null' : String(collectionId));
+    };
+
     const fetchBooks = async () => {
         try {
             setLoading(true);
-            const response = await fetch(`${API_BASE_URL}/books/`);
+            let url = `${API_BASE_URL}/books/`;
+
+            // If a collection is selected (and not 'hidden'), fetch books from that collection
+            if (selectedCollection && selectedCollection !== 'hidden') {
+                url = `${API_BASE_URL}/collections/${selectedCollection}/books`;
+            }
+
+            const response = await fetch(url);
             if (response.ok) {
                 const data = await response.json();
+                console.log('Fetched books:', data);
                 setBooks(data);
             }
         } catch (error) {
@@ -221,16 +245,12 @@ function App() {
     };
 
     const getFilteredBooks = () => {
+        // Backend now handles collection filtering, we only filter by visibility
         if (selectedCollection === 'hidden') {
             return books.filter(book => book.visibility === 'hidden');
         }
-        if (selectedCollection === null) {
-            return books.filter(book => book.visibility !== 'hidden');
-        }
-        return books.filter(book =>
-            book.collections?.some(c => c.id === selectedCollection) &&
-            book.visibility !== 'hidden'
-        );
+        // For regular library and collections, filter out hidden books
+        return books.filter(book => book.visibility !== 'hidden');
     };
 
     const getCollectionTitle = () => {
@@ -287,8 +307,6 @@ function App() {
                 onSelectCollection={setSelectedCollection}
                 onCreateCollection={createCollection}
                 onDeleteCollection={deleteCollection}
-                view={sidebarView}
-                onViewChange={setSidebarView}
             />
 
             {/* Confirm Dialog */}
@@ -314,7 +332,8 @@ function App() {
 
             {/* Main Content */}
             <main className="flex-1 w-full">
-                {selectedCollection !== 'hidden' && (
+                {/* Only show RTYPanel when viewing all books (selectedCollection === null) and not hidden books */}
+                {selectedCollection === null && (
                     <RTYPanel
                         onUpdateProgress={updateBookProgress}
                         onUpdateRatingReview={updateBookRatingReview}
@@ -331,13 +350,13 @@ function App() {
                 {scanResult && (
                     <div
                         className={`
-              fixed bottom-6 right-6 z-50 px-6 py-4 rounded-xl shadow-lg
-              transition-opacity duration-500
-              ${scanResult ? 'opacity-100' : 'opacity-0'}
-              ${scanResult.status === 'success'
+                  fixed bottom-6 right-6 z-50 px-6 py-4 rounded-xl shadow-lg
+                  transition-opacity duration-500
+                  ${scanResult ? 'opacity-100' : 'opacity-0'}
+                  ${scanResult.status === 'success'
                                 ? 'bg-green-100 text-green-800'
                                 : 'bg-red-100 text-red-800'}
-            `}
+                `}
                     >
                         {scanResult.message}
                     </div>
@@ -346,5 +365,6 @@ function App() {
         </div>
     );
 }
+
 
 export default App;

@@ -109,7 +109,7 @@ def health_check():
 
 
 @app.patch("/books/{book_id}/visibility")
-def remove_book(book_id: int, session: Session = Depends(get_session)):
+def change_vis(book_id: int, session: Session = Depends(get_session)):
     result = change_visibility(session, book_id)
     return result
 
@@ -137,14 +137,6 @@ def get_collections(session: Session = Depends(get_session)):
     return get_collections_db(session)
 
 
-@app.get("/collections/{collection_id}")
-def get_collection(collection_id: int, session: Session = Depends(get_session)):
-    collection = get_collection_with_books_db(session, collection_id)
-    if not collection:
-        raise HTTPException(status_code=404, detail="Collection not found")
-    return collection
-
-
 @app.delete("/collections/{collection_id}")
 def delete_collection(collection_id: int, session: Session = Depends(get_session)):
     try:
@@ -152,24 +144,6 @@ def delete_collection(collection_id: int, session: Session = Depends(get_session
         if success:
             return {"message": "Collection deleted successfully"}
         raise HTTPException(status_code=404, detail="Collection not found")
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
-class AddBookToCollectionData(BaseModel):
-    book_id: int
-
-
-@app.post("/collections/{collection_id}/books")
-def add_book_to_collection(
-    collection_id: int,
-    data: AddBookToCollectionData,
-    session: Session = Depends(get_session)
-):
-    try:
-        add_book_to_collection_db(session, data.book_id, collection_id)
-        return {"message": "Book added to collection successfully"}
-    except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
@@ -187,3 +161,30 @@ def remove_book_from_collection(
         raise HTTPException(status_code=404, detail="Book not in collection")
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+    
+
+class AddBookToCollectionData(BaseModel):
+    book_id: int
+
+@app.post("/collections/{collection_id}/books")
+def add_book_to_collection(
+    collection_id: int,
+    data: AddBookToCollectionData,
+    session: Session = Depends(get_session)
+):
+    try:
+        add_book_to_collection_db(session, data.book_id, collection_id)
+        return {"message": "Book added to collection successfully"}
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@app.get("/collections/{collection_id}/books", response_model=list[Book])
+def get_collection_books(collection_id: int, session: Session = Depends(get_session)):
+    try:
+        books = get_collection_with_books_db(session, collection_id)
+        return books
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))

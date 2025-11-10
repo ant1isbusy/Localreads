@@ -155,7 +155,7 @@ const BookList = ({ books, onUpdateProgress, onUpdateRatingReview, onRemoveBook,
 
             {books.length === 0 && !loading && (
                 <div className="text-center py-12">
-                    <p className="text-amber-700 text-lg">No books found in your library.</p>
+                    <p className="text-gray-700 text-lg">No books found.</p>
                 </div>
             )}
 

@@ -49,3 +49,4 @@ npm run dev -- --host
 - Add search and filtering
 - Sync progress with KoReader on Kindle
 - Add more sorting options
+- Import from Goodreads

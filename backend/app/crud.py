@@ -95,8 +95,13 @@ def remove_book_from_collection_db(session: Session, book_id: int, collection_id
 
 def get_collection_with_books_db(session: Session, collection_id: int):
     try:
-        
-        # TODO fix
+        books = session.exec(
+            select(Book)
+            .join(BookCollection, Book.id == BookCollection.book_id)
+            .where(BookCollection.collection_id == collection_id)
+        ).all()
+        return books
+
     except Exception as e:
         print(f"Error getting collection with books: {str(e)}")
         raise
