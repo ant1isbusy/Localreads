@@ -1,6 +1,6 @@
 # Localreads
 
-A local reading progress tracker for your ebook collection. Track reading progress, rate books, and manage your library - all locally.
+A local reading progress tracker for your ebook collection. Track reading progress, rate books, write reviews, create collections, all locally.
 
 <p align="center">
   <img src="img/image.png" alt="Image 1" width="555"/>
@@ -12,6 +12,7 @@ A local reading progress tracker for your ebook collection. Track reading progre
 - Track reading progress for EPUB and PDF files
 - Star ratings and reviews
 - Automatic book cover and EPUB metadata extraction
+- Create book collections
 - Responsive design for desktop and mobile
 
 ## Tech Stack
