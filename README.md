@@ -40,7 +40,7 @@ npm install
 npm run dev -- --host
 ```
 
-3. **Access**: <http://localhost:3000> or http://[your-ip]:3000 from other devices.
+3. **Access**: <http://localhost:3000> or http://[your-ip]:3000 from other devices on your network.
 
 ---
 
