@@ -12,6 +12,7 @@ A local reading progress tracker for your ebook collection. Track reading progre
 - Track reading progress for EPUB and PDF files
 - Star ratings and reviews
 - Automatic book cover and EPUB metadata extraction
+- Import books using ISBN
 - Create book collections
 - Responsive design for desktop and mobile
 
