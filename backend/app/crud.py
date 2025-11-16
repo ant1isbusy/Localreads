@@ -4,6 +4,7 @@ from typing import List, Optional
 from .scanners import EPUBScanner, PDFScanner
 from datetime import datetime
 import os
+from .utils import fetch_metadata_from_isbn
 
 
 def create_book(session: Session, book_data: dict) -> Book:
@@ -13,10 +14,12 @@ def create_book(session: Session, book_data: dict) -> Book:
     session.refresh(db_book)
     return db_book
 
+
 def get_collections_db(session: Session):
     statement = select(Collection)
     collections = session.exec(statement).all()
     return collections
+
 
 def create_collection_db(session: Session, collection_data: dict) -> dict:
     try:
@@ -29,6 +32,7 @@ def create_collection_db(session: Session, collection_data: dict) -> dict:
         session.rollback()
         print(f"Error creating collection: {str(e)}")
         raise
+
 
 def delete_collection_db(session: Session, collection_id: int) -> bool:
     try:
@@ -43,31 +47,31 @@ def delete_collection_db(session: Session, collection_id: int) -> bool:
         print(f"Error deleting collection: {str(e)}")
         raise
 
-def add_book_to_collection_db(session: Session, book_id: int, collection_id: int) -> BookCollection:
+
+def add_book_to_collection_db(
+    session: Session, book_id: int, collection_id: int
+) -> BookCollection:
     try:
         book = session.get(Book, book_id)
         collection = session.get(Collection, collection_id)
-        
+
         if not book or not collection:
             raise ValueError("Book or Collection not found")
-        
+
         existing = session.exec(
             select(BookCollection)
             .where(BookCollection.book_id == book_id)
             .where(BookCollection.collection_id == collection_id)
         ).first()
-        
+
         if existing:
             return existing
-        
-        book_collection = BookCollection(
-            book_id=book_id,
-            collection_id=collection_id
-        )
+
+        book_collection = BookCollection(book_id=book_id, collection_id=collection_id)
         session.add(book_collection)
         session.commit()
         session.refresh(book_collection)
-        
+
         print(f"Added book {book_id} to collection {collection_id}")
         return book_collection
     except Exception as e:
@@ -75,14 +79,17 @@ def add_book_to_collection_db(session: Session, book_id: int, collection_id: int
         print(f"Error adding book to collection: {str(e)}")
         raise
 
-def remove_book_from_collection_db(session: Session, book_id: int, collection_id: int) -> bool:
+
+def remove_book_from_collection_db(
+    session: Session, book_id: int, collection_id: int
+) -> bool:
     try:
         book_collection = session.exec(
             select(BookCollection)
             .where(BookCollection.book_id == book_id)
             .where(BookCollection.collection_id == collection_id)
         ).first()
-        
+
         if book_collection:
             session.delete(book_collection)
             session.commit()
@@ -92,6 +99,7 @@ def remove_book_from_collection_db(session: Session, book_id: int, collection_id
         session.rollback()
         print(f"Error removing book from collection: {str(e)}")
         raise
+
 
 def get_collection_with_books_db(session: Session, collection_id: int):
     try:
@@ -106,25 +114,28 @@ def get_collection_with_books_db(session: Session, collection_id: int):
         print(f"Error getting collection with books: {str(e)}")
         raise
 
+
 def get_books(session: Session, sort_by: str = "title"):
     statement = select(Book)
     if sort_by == "title":
         statement = statement.order_by(Book.title)
     elif sort_by == "progress":
         statement = statement.order_by(Book.progress.desc())
-    
+
     books = session.exec(statement).all()
-    
+
     for book in books:
         _ = book.collections  # This triggers lazy loading
-    
+
     return books
+
 
 def get_book_by_id(session: Session, book_id: int) -> Optional[Book]:
     book = session.get(Book, book_id)
     if book:
         _ = book.collections  # Load collections
     return book
+
 
 def change_visibility(session: Session, book_id: int):
     book = session.get(Book, book_id)
@@ -268,3 +279,7 @@ def process_pdf_file(file_path: str) -> Optional[dict]:
     except Exception as e:
         print(f"Error processing PDF {file_path}: {e}")
         return None
+
+
+
+

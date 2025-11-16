@@ -16,7 +16,8 @@ from .crud import (
     delete_collection_db,
     add_book_to_collection_db,
     remove_book_from_collection_db,
-    get_collection_with_books_db
+    get_collection_with_books_db,
+    add_book_from_isbn,
 )
 
 app = FastAPI(title="Localreads")
@@ -121,8 +122,7 @@ class CollectionData(BaseModel):
 
 @app.post("/collections/")
 async def create_collection(
-    collection: CollectionData,
-    session: Session = Depends(get_session)
+    collection: CollectionData, session: Session = Depends(get_session)
 ):
     try:
         collection_dict = collection.model_dump(exclude_unset=True)
@@ -150,9 +150,7 @@ def delete_collection(collection_id: int, session: Session = Depends(get_session
 
 @app.delete("/collections/{collection_id}/books/{book_id}")
 def remove_book_from_collection(
-    collection_id: int,
-    book_id: int,
-    session: Session = Depends(get_session)
+    collection_id: int, book_id: int, session: Session = Depends(get_session)
 ):
     try:
         success = remove_book_from_collection_db(session, book_id, collection_id)
@@ -161,16 +159,17 @@ def remove_book_from_collection(
         raise HTTPException(status_code=404, detail="Book not in collection")
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
-    
+
 
 class AddBookToCollectionData(BaseModel):
     book_id: int
+
 
 @app.post("/collections/{collection_id}/books")
 def add_book_to_collection(
     collection_id: int,
     data: AddBookToCollectionData,
-    session: Session = Depends(get_session)
+    session: Session = Depends(get_session),
 ):
     try:
         add_book_to_collection_db(session, data.book_id, collection_id)
@@ -188,3 +187,8 @@ def get_collection_books(collection_id: int, session: Session = Depends(get_sess
         return books
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
+
+
+@app.post("/isbn/{isbn}")
+def import_from_isbn(isbn: str):
+    add_book_from_isbn(isbn)

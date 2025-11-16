@@ -4,5 +4,5 @@ sqlmodel
 ebooklib
 pymupdf
 pillow
-alembic
+requests
 bs4
