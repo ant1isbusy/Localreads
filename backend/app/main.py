@@ -190,5 +190,5 @@ def get_collection_books(collection_id: int, session: Session = Depends(get_sess
 
 
 @app.post("/isbn/{isbn}")
-def import_from_isbn(isbn: str):
-    add_book_from_isbn(isbn)
+def import_from_isbn(isbn: str, session: Session = Depends(get_session)):
+    return add_book_from_isbn(isbn, session)

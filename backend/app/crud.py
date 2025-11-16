@@ -281,5 +281,30 @@ def process_pdf_file(file_path: str) -> Optional[dict]:
         return None
 
 
+def add_book_from_isbn(isbn: str, session: Session) -> Optional[Book]:
+    file_path = f"ISBN:{isbn}"
+    existing_book = session.exec(
+        select(Book).where(Book.file_path == file_path)
+    ).first()
 
+    if existing_book:
+        return existing_book
 
+    metadata = fetch_metadata_from_isbn(isbn)
+    if not metadata:
+        return None
+
+    book_data = {
+        "title": metadata["title"],
+        "author": metadata["author"],
+        "file_path": f"ISBN:{isbn}",
+        "file_type": "ISBN",
+        "file_size": 0,
+        "pages": metadata.get("pages"),
+        "cover_path": metadata["cover_url"],
+        "progress": 0.0,
+        "current_page": 0,
+        "status": BookStatus.UNREAD,
+    }
+
+    return create_book(session, book_data)

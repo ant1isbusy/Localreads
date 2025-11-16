@@ -2,6 +2,7 @@ from typing import Optional
 import requests as req
 import bs4
 
+
 def fetch_metadata_from_isbn(isbn: str) -> Optional[dict]:
     """Fetch book metadata from openlibrary.org using ISBN"""
 
@@ -24,6 +25,6 @@ def fetch_metadata_from_isbn(isbn: str) -> Optional[dict]:
     return {
         "title": title,
         "author": ", ".join(author_names) if author_names else "Unknown Author",
+        "pages": data.get("number_of_pages"),
         "cover_url": f"http://covers.openlibrary.org/b/isbn/{isbn}-L.jpg",
     }
-
