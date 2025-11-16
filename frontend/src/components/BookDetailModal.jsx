@@ -43,6 +43,18 @@ const BookDetailModal = ({ book, onClose, onUpdate }) => {
         }
     };
 
+    const getCoverImageSrc = () => {
+        if (!book.cover_path) return null;
+
+        if (book.file_path && book.file_path.startsWith('ISBN')) {
+            return book.cover_path;
+        }
+
+        return `${API_BASE_URL}/${book.cover_path}`
+    }
+
+    const coverImageSrc = getCoverImageSrc();
+
     return (
         <div
             className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
@@ -73,9 +85,9 @@ const BookDetailModal = ({ book, onClose, onUpdate }) => {
                         {/* Cover */}
                         <div className="flex-shrink-0 mx-auto md:mx-0">
                             <div className="w-36 h-54 rounded-lg overflow-hidden border-2 border-gray-200 shadow-md">
-                                {book.cover_path ? (
+                                {coverImageSrc ? (
                                     <img
-                                        src={`${API_BASE_URL}/${book.cover_path}`}
+                                        src={coverImageSrc}
                                         alt={book.title}
                                         className="w-full h-full object-cover"
                                     />

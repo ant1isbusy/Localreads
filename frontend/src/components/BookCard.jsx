@@ -98,6 +98,18 @@ const BookCard = ({ book, onClick, onRemove, onAddToCollection }) => {
         }, 300);
     };
 
+    const getCoverImageSrc = () => {
+        if (!book.cover_path) return null;
+
+        if (book.file_path && book.file_path.startsWith('ISBN')) {
+            return book.cover_path;
+        }
+
+        return `${API_BASE_URL}/${book.cover_path}`
+    }
+
+    const coverImageSrc = getCoverImageSrc();
+
     return (
         <>
             <div
@@ -112,9 +124,9 @@ const BookCard = ({ book, onClick, onRemove, onAddToCollection }) => {
                     {/* Book Cover */}
                     <div className="flex-shrink-0">
                         <div className="w-24 h-36 rounded overflow-hidden border border-gray-200">
-                            {book.cover_path ? (
+                            {coverImageSrc ? (
                                 <img
-                                    src={`${API_BASE_URL}/${book.cover_path}`}
+                                    src={coverImageSrc}
                                     alt={book.title}
                                     className="w-full h-full object-cover"
                                 />
@@ -159,13 +171,12 @@ const BookCard = ({ book, onClick, onRemove, onAddToCollection }) => {
 
                         {/* Status Badge */}
                         <div className="mt-2">
-                            <span className={`inline-block px-2 py-1 text-xs font-semibold rounded-full ${
-                                book.status === 'finished'
+                            <span className={`inline-block px-2 py-1 text-xs font-semibold rounded-full ${book.status === 'finished'
                                     ? 'bg-green-100 text-green-800'
                                     : book.status === 'reading'
                                         ? 'bg-blue-100 text-blue-800'
                                         : 'bg-gray-100 text-gray-800'
-                            }`}>
+                                }`}>
                                 {book.status === 'finished' ? 'Finished' : book.status === 'reading' ? 'Reading' : 'Unread'}
                             </span>
                         </div>
