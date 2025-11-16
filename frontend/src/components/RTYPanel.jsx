@@ -16,7 +16,7 @@ const RTYPanel = ({ onUpdateProgress, onUpdateRatingReview }) => {
     const fetchBooksReadThisYear = async () => {
         try {
             setLoading(true);
-            const response = await fetch(`${API_BASE_URL}/books`);
+            const response = await fetch(`${API_BASE_URL}/books/`);
             if (!response.ok) {
                 throw new Error('Failed to fetch books');
             }

@@ -1,5 +1,6 @@
 export const getBaseUrl = () => {
     const hostname = window.location.hostname;
+    console.log(hostname)
 
     if (hostname === 'localhost' || hostname === '127.0.0.1') {
         return 'http://localhost:8000';

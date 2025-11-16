@@ -63,6 +63,8 @@ def read_book(book_id: int, session: Session = Depends(get_session)):
 
 class ProgressUpdate(BaseModel):
     progress: float
+    current_page: int | None = None
+    status: str | None = None
 
 
 @app.patch("/books/{book_id}/progress")
@@ -71,7 +73,12 @@ def update_progress(
     progress_update: ProgressUpdate,
     session: Session = Depends(get_session),
 ):
-    updated_book = update_book_progress(session, book_id, progress_update.progress)
+    prog_dict = {
+        "progress": progress_update.progress,
+        "current_page": progress_update.current_page,
+        "status": progress_update.status,
+    }
+    updated_book = update_book_progress(session, book_id, prog_dict)
     if updated_book:
         return updated_book
     raise HTTPException(status_code=404, detail="Book not found")

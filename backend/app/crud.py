@@ -151,16 +151,17 @@ def change_visibility(session: Session, book_id: int):
     return None
 
 
-def update_book_progress(session: Session, book_id: int, progress: float):
+def update_book_progress(session: Session, book_id: int, progress_data: dict):
     book = session.get(Book, book_id)
     if book:
-        book.progress = max(0.0, min(1.0, progress))
-        if progress == 0.0:
-            book.status = BookStatus.UNREAD
-        elif progress < 1.0:
-            book.status = BookStatus.READING
-        else:
-            book.status = BookStatus.FINISHED
+        progress = progress_data.get("progress", book.progress)
+        current_page = progress_data.get("current_page", book.current_page)
+        status_str = progress_data.get("status", None)
+        book.progress = progress
+        if current_page is not None:
+            book.current_page = current_page
+        if status_str:
+            book.status = status_str
 
         book.last_updated = datetime.now()
         session.add(book)
