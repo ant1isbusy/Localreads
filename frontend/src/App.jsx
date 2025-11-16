@@ -213,6 +213,25 @@ function App() {
         }
     };
 
+    const addFromISBN = async (isbn) => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/isbn/${isbn}`, {
+                method: 'POST',
+            });
+            if (response.ok) {
+                const result = await response.json();
+                setScanResult({ status: 'success', message: `Added: ${result.title}` });
+                await fetchBooks();
+            } else {
+                const error = await response.json();
+                setScanResult({ status: 'error', message: error.detail || 'Failed to add book' });
+            }
+        } catch (error) {
+            console.error('Error adding book from ISBN:', error);
+            setScanResult({ status: 'error', message: 'Failed to add book' });
+        }
+    };
+
     const updateBookRatingReview = async (bookId, ratingStars, review) => {
         try {
             const response = await fetch(`${API_BASE_URL}/books/${bookId}/rating_review`, {
@@ -297,6 +316,7 @@ function App() {
                 onDeleteCollection={deleteCollection}
                 onScanLibrary={scanLibrary}
                 scanning={scanning}
+                onAddFromISBN={addFromISBN}
             />
 
             {/* Confirm Dialog */}
@@ -354,6 +374,5 @@ function App() {
         </div>
     );
 }
-
 
 export default App;
