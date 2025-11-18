@@ -47,8 +47,8 @@ npm run dev -- --host
 
 #### TODO
 
-- Scan subfolders in books path
-- Add search and filtering
 - Sync progress with KoReader on Kindle
-- Add more sorting options
+- Add search and filtering
 - Import from Goodreads
+- Scan subfolders in books path
+- Add more sorting options
